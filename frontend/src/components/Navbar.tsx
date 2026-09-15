@@ -6,12 +6,15 @@ import {
   RefreshCw01, 
   Key01, 
   Check,
+  Clock,
 } from './Icons';
 
 interface NavbarProps {
   dbInfo: DbInfo | null;
   onOpenConnect: () => void;
   onOpenSettings: () => void;
+  onOpenHistory: () => void;
+  historyCount: number;
   onRefreshSchema: () => void;
   isRefreshing: boolean;
   apiKeyConfigured: boolean;
@@ -21,6 +24,8 @@ export default function Navbar({
   dbInfo, 
   onOpenConnect, 
   onOpenSettings, 
+  onOpenHistory,
+  historyCount,
   onRefreshSchema,
   isRefreshing,
   apiKeyConfigured
@@ -152,6 +157,35 @@ export default function Navbar({
         >
           <Key01 style={{ width: '0.8rem', height: '0.8rem' }} />
           <span>{apiKeyConfigured ? 'Gemini 2.5 Flash' : 'Demo Mode (Mock AI)'}</span>
+        </button>
+
+        {/* History & Favorites Drawer Button */}
+        <button
+          onClick={onOpenHistory}
+          className="btn-cohere-pill-outline"
+          style={{
+            fontSize: '12px',
+            padding: '5px 12px',
+            color: 'var(--cohere-ink)',
+          }}
+          title="Open Query History & Saved Favorites"
+        >
+          <Clock style={{ width: '0.8rem', height: '0.8rem', color: 'var(--cohere-primary)' }} />
+          <span>History</span>
+          {historyCount > 0 && (
+            <span style={{
+              fontSize: '10px',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              backgroundColor: 'var(--cohere-primary)',
+              color: '#ffffff',
+              padding: '1px 6px',
+              borderRadius: 'var(--radius-full)',
+              marginLeft: '2px',
+            }}>
+              {historyCount}
+            </span>
+          )}
         </button>
 
         {/* Refresh Schema Button */}

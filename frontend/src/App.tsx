@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { DbInfo, AiSettings, QueryResult, PreviewData, SampleQuery } from './types';
+import type { DbInfo, AiSettings, QueryResult, PreviewData, SampleQuery, HistoryItem } from './types';
 import Navbar from './components/Navbar';
 import SchemaSidebar from './components/SchemaSidebar';
 import PromptSection from './components/PromptSection';
@@ -11,6 +11,7 @@ import Visualizer from './components/Visualizer';
 import ConnectionModal from './components/ConnectionModal';
 import SettingsModal from './components/SettingsModal';
 import TablePreviewModal from './components/TablePreviewModal';
+import HistoryModal from './components/HistoryModal';
 import { 
   fetchSchema, 
   connectDatabase, 
@@ -21,11 +22,33 @@ import {
 } from './services/api';
 import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
+const STORAGE_KEY_HISTORY = 'tosql_query_history_v1';
+
 export default function App() {
   // DB & Schema State
   const [dbInfo, setDbInfo] = useState<DbInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [samples, setSamples] = useState<SampleQuery[]>([]);
+
+  // History & Favorites State
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_HISTORY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  // Sync history changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+    } catch (e) {
+      console.error('Failed to persist history to localStorage', e);
+    }
+  }, [history]);
 
   // Prompt & Query State
   const [prompt, setPrompt] = useState('');
@@ -115,6 +138,53 @@ export default function App() {
     }
   };
 
+  // Record query into persistent history
+  const recordHistoryItem = (item: {
+    prompt: string;
+    sql?: string;
+    success: boolean;
+    rowCount?: number;
+    executionTimeMs?: number;
+  }) => {
+    const newItem: HistoryItem = {
+      id: `hist_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      prompt: item.prompt,
+      sql: item.sql,
+      timestamp: Date.now(),
+      success: item.success,
+      rowCount: item.rowCount,
+      executionTimeMs: item.executionTimeMs,
+      isFavorite: false,
+    };
+    setHistory(prev => [newItem, ...prev.slice(0, 99)]);
+  };
+
+  const handleToggleFavorite = (id: string) => {
+    setHistory(prev => prev.map(item => 
+      item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
+    ));
+  };
+
+  const handleRemoveHistoryItem = (id: string) => {
+    setHistory(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm('Are you sure you want to clear all query history?')) {
+      setHistory([]);
+    }
+  };
+
+  const handleSelectHistoryQuery = (selectedPrompt: string, selectedSql?: string) => {
+    setPrompt(selectedPrompt);
+    if (selectedSql) {
+      setQueryResult(prev => ({
+        ...(prev || { success: true }),
+        sql: selectedSql,
+      }));
+    }
+  };
+
   // Handle Generate & Run with Pipeline Visualization
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -151,6 +221,15 @@ export default function App() {
       } else {
         setActiveTab('table');
       }
+
+      // Record to history
+      recordHistoryItem({
+        prompt,
+        sql: res.sql,
+        success: res.success,
+        rowCount: res.data?.row_count,
+        executionTimeMs: res.data?.execution_time_ms,
+      });
     } catch (err) {
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
       setErrorBanner((err as Error).message);
@@ -179,6 +258,15 @@ export default function App() {
           data: res.data
         }));
       }
+
+      // Record direct SQL execution to history
+      recordHistoryItem({
+        prompt: prompt.trim() ? `[Edited] ${prompt}` : `Manual SQL Execution`,
+        sql: res.sql || sql,
+        success: res.success,
+        rowCount: res.data?.row_count,
+        executionTimeMs: res.data?.execution_time_ms,
+      });
     } catch (err) {
       setErrorBanner((err as Error).message);
     } finally {
@@ -200,6 +288,8 @@ export default function App() {
         dbInfo={dbInfo}
         onOpenConnect={() => setIsConnectOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        historyCount={history.length}
         onRefreshSchema={loadSchema}
         isRefreshing={isRefreshing}
         apiKeyConfigured={Boolean(aiSettings.apiKey)}
@@ -515,6 +605,17 @@ export default function App() {
         tableName={previewTable}
         previewData={previewData}
         isLoading={isLoadingPreview}
+      />
+
+      {/* Query History & Saved Favorites Dialog */}
+      <HistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        history={history}
+        onSelectQuery={handleSelectHistoryQuery}
+        onToggleFavorite={handleToggleFavorite}
+        onClearHistory={handleClearHistory}
+        onRemoveItem={handleRemoveHistoryItem}
       />
     </div>
   );

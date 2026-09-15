@@ -99,3 +99,17 @@ export interface PipelineStep {
   desc: string;
   tag: string;
 }
+
+// ─── Query History & Saved Queries ───────────────────────────────────
+
+export interface HistoryItem {
+  id: string;
+  prompt: string;
+  sql?: string;
+  timestamp: number;
+  success: boolean;
+  rowCount?: number;
+  executionTimeMs?: number;
+  isFavorite?: boolean;
+}
+

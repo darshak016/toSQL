@@ -6,7 +6,9 @@ import {
   RefreshCw01, 
   Copy01, 
   Check, 
+  Zap,
 } from './Icons';
+import { formatSql } from '../utils/sqlFormatter';
 
 function highlightSql(sql: string): React.ReactNode[] {
   if (!sql) return [];
@@ -62,6 +64,7 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
   const [isEditing, setIsEditing] = useState(false);
   const [editableSql, setEditableSql] = useState(sql || '');
   const [copied, setCopied] = useState(false);
+  const [formattedToast, setFormattedToast] = useState(false);
 
   useEffect(() => { setEditableSql(sql || ''); }, [sql]);
 
@@ -71,6 +74,13 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
     navigator.clipboard.writeText(editableSql);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleFormat = () => {
+    const formatted = formatSql(editableSql);
+    setEditableSql(formatted);
+    setFormattedToast(true);
+    setTimeout(() => setFormattedToast(false), 2000);
   };
 
   if (!sql) return null;
@@ -123,9 +133,40 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
+            onClick={handleFormat}
+            className="btn-cohere-pill-outline"
+            style={{ 
+              padding: '4px 10px', 
+              fontSize: '11px',
+              backgroundColor: formattedToast ? '#ecfdf5' : 'transparent',
+              borderColor: formattedToast ? '#a7f3d0' : 'var(--cohere-hairline)',
+              color: formattedToast ? '#059669' : 'var(--cohere-ink)'
+            }}
+            title="Auto-format and uppercase SQL keywords"
+          >
+            {formattedToast ? (
+              <>
+                <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                <span>Formatted!</span>
+              </>
+            ) : (
+              <>
+                <Zap style={{ width: '0.75rem', height: '0.75rem', color: '#d97706' }} />
+                <span>Format SQL</span>
+              </>
+            )}
+          </button>
+
+          <button
             onClick={handleCopy}
             className="btn-cohere-pill-outline"
-            style={{ padding: '4px 10px', fontSize: '11px' }}
+            style={{ 
+              padding: '4px 10px', 
+              fontSize: '11px',
+              backgroundColor: copied ? '#ecfdf5' : 'transparent',
+              borderColor: copied ? '#a7f3d0' : 'var(--cohere-hairline)',
+              color: copied ? '#059669' : 'var(--cohere-ink)'
+            }}
           >
             {copied ? (
               <>

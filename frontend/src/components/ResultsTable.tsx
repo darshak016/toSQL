@@ -5,6 +5,9 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Table as TableIcon,
+  Copy01,
+  Check,
+  FileCode,
 } from './Icons';
 
 interface ResultsTableProps {
@@ -15,6 +18,7 @@ interface ResultsTableProps {
 export default function ResultsTable({ columns = [], rows = [] }: ResultsTableProps) {
   const [filterText, setFilterText] = useState('');
   const [page, setPage] = useState(0);
+  const [copiedMd, setCopiedMd] = useState(false);
   const rowsPerPage = 10;
 
   const filteredRows = rows.filter(row =>
@@ -23,20 +27,61 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
   const displayedRows = filteredRows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
+  const getTimestamp = () => {
+    const d = new Date();
+    return d.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  };
+
   const exportCSV = () => {
     if (!columns.length || !rows.length) return;
     const header = columns.join(',');
     const csvRows = rows.map(r =>
       r.map(v => {
         const str = String(v ?? '');
-        return str.includes(',') ? `"${str.replace(/"/g, '""')}"` : str;
+        return str.includes(',') || str.includes('"') || str.includes('\n') 
+          ? `"${str.replace(/"/g, '""')}"` 
+          : str;
       }).join(',')
     );
     const blob = new Blob([[header, ...csvRows].join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url; link.setAttribute('download', `tosql_results_${Date.now()}.csv`);
-    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    link.href = url;
+    link.setAttribute('download', `tosql_query_${getTimestamp()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportJSON = () => {
+    if (!columns.length || !rows.length) return;
+    const records = rows.map(r => {
+      const obj: Record<string, unknown> = {};
+      columns.forEach((col, idx) => {
+        obj[col] = r[idx];
+      });
+      return obj;
+    });
+    const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `tosql_query_${getTimestamp()}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const copyMarkdown = () => {
+    if (!columns.length || !rows.length) return;
+    const headerLine = `| ${columns.join(' | ')} |`;
+    const separatorLine = `| ${columns.map(() => '---').join(' | ')} |`;
+    const dataLines = rows.map(r => `| ${r.map(v => String(v ?? '').replace(/\|/g, '\\|')).join(' | ')} |`);
+    const md = [headerLine, separatorLine, ...dataLines].join('\n');
+    
+    navigator.clipboard.writeText(md);
+    setCopiedMd(true);
+    setTimeout(() => setCopiedMd(false), 2000);
   };
 
   if (!columns.length) {
@@ -133,21 +178,58 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
         </div>
 
         {/* Right Info and Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.72rem',
             color: 'var(--cohere-muted)',
+            marginRight: '0.375rem',
           }}>
             Showing {filteredRows.length} {filteredRows.length === 1 ? 'record' : 'records'}
           </span>
 
           <button
+            onClick={copyMarkdown}
+            className="btn-cohere-pill-outline"
+            style={{ 
+              padding: '4px 10px', 
+              fontSize: '11px',
+              backgroundColor: copiedMd ? '#ecfdf5' : 'transparent',
+              borderColor: copiedMd ? '#a7f3d0' : 'var(--cohere-hairline)',
+              color: copiedMd ? '#059669' : 'var(--cohere-ink)'
+            }}
+            title="Copy table to clipboard as Markdown format"
+          >
+            {copiedMd ? (
+              <>
+                <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                <span>Copied MD!</span>
+              </>
+            ) : (
+              <>
+                <Copy01 style={{ width: '0.75rem', height: '0.75rem' }} />
+                <span>Copy MD</span>
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={exportJSON}
+            className="btn-cohere-pill-outline"
+            style={{ padding: '4px 10px', fontSize: '11px' }}
+            title="Download records as JSON array"
+          >
+            <FileCode style={{ width: '0.75rem', height: '0.75rem' }} />
+            <span>Export JSON</span>
+          </button>
+
+          <button
             onClick={exportCSV}
             className="btn-cohere-pill-outline"
-            style={{ padding: '5px 12px', fontSize: '12px' }}
+            style={{ padding: '4px 10px', fontSize: '11px' }}
+            title="Download records as CSV spreadsheet"
           >
-            <Download01 style={{ width: '0.8rem', height: '0.8rem' }} />
+            <Download01 style={{ width: '0.75rem', height: '0.75rem' }} />
             <span>Export CSV</span>
           </button>
         </div>
