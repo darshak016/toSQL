@@ -1,5 +1,14 @@
 import React from 'react';
+import type { SampleQuery } from '../types';
 import { Send01 } from './Icons';
+
+interface PromptSectionProps {
+  prompt: string;
+  setPrompt: (value: string) => void;
+  onGenerate: () => void;
+  isLoading: boolean;
+  samples?: SampleQuery[];
+}
 
 export default function PromptSection({
   prompt,
@@ -7,8 +16,8 @@ export default function PromptSection({
   onGenerate,
   isLoading,
   samples = []
-}) {
-  const handleKeyDown = (e) => {
+}: PromptSectionProps) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (prompt.trim() && !isLoading) onGenerate();
@@ -131,12 +140,12 @@ export default function PromptSection({
         transition: 'border-color 0.15s ease, background-color 0.15s ease',
       }}
         onFocusCapture={e => {
-          e.currentTarget.style.borderColor = 'var(--cohere-primary)';
-          e.currentTarget.style.backgroundColor = '#ffffff';
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--cohere-primary)';
+          (e.currentTarget as HTMLElement).style.backgroundColor = '#ffffff';
         }}
         onBlurCapture={e => {
-          e.currentTarget.style.borderColor = 'var(--cohere-hairline)';
-          e.currentTarget.style.backgroundColor = 'var(--cohere-soft-stone)';
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--cohere-hairline)';
+          (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cohere-soft-stone)';
         }}
       >
         <textarea

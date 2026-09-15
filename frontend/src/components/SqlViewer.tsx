@@ -8,8 +8,8 @@ import {
   Check, 
 } from './Icons';
 
-function highlightSql(sql) {
-  if (!sql) return '';
+function highlightSql(sql: string): React.ReactNode[] {
+  if (!sql) return [];
   const keywords = /\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|AS|ON|AND|OR|NOT|IN|IS|NULL|COUNT|SUM|AVG|MAX|MIN|DISTINCT|CASE|WHEN|THEN|ELSE|END|BETWEEN|LIKE|ASC|DESC|WITH|UNION|INTERSECT|EXCEPT|CREATE|DROP|INSERT|UPDATE|DELETE|ALTER|INDEX|VIEW)\b/gi;
   const numbers = /\b(\d+(\.\d+)?)\b/g;
   const strings = /('(?:''|[^'])*')/g;
@@ -51,7 +51,14 @@ function highlightSql(sql) {
   });
 }
 
-export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExecuting }) {
+interface SqlViewerProps {
+  sql: string;
+  dialect?: string;
+  onExecuteSql?: (sql: string) => void;
+  isExecuting?: boolean;
+}
+
+export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExecuting }: SqlViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editableSql, setEditableSql] = useState(sql || '');
   const [copied, setCopied] = useState(false);

@@ -1,4 +1,5 @@
 import React from 'react';
+import type { DbInfo } from '../types';
 import { 
   Database01, 
   Settings01, 
@@ -7,6 +8,15 @@ import {
   Check,
 } from './Icons';
 
+interface NavbarProps {
+  dbInfo: DbInfo | null;
+  onOpenConnect: () => void;
+  onOpenSettings: () => void;
+  onRefreshSchema: () => void;
+  isRefreshing: boolean;
+  apiKeyConfigured: boolean;
+}
+
 export default function Navbar({ 
   dbInfo, 
   onOpenConnect, 
@@ -14,7 +24,7 @@ export default function Navbar({
   onRefreshSchema,
   isRefreshing,
   apiKeyConfigured
-}) {
+}: NavbarProps) {
   const dbType = dbInfo?.database_type?.toUpperCase() || 'SQLITE';
   const tableCount = dbInfo?.table_count || 0;
 

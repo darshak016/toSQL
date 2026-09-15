@@ -1,26 +1,36 @@
 import React from 'react';
 import { AlertCircle, RefreshCw01, Trash01 } from './Icons';
 
-export class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: React.ErrorInfo | null;
+}
+
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     console.error('ErrorBoundary caught an unhandled React exception:', error, errorInfo);
     this.setState({ errorInfo });
   }
 
-  handleReload = () => {
+  handleReload = (): void => {
     window.location.reload();
   };
 
-  handleReset = () => {
+  handleReset = (): void => {
     try {
       localStorage.clear();
       sessionStorage.clear();
@@ -79,7 +89,7 @@ export class ErrorBoundary extends React.Component {
                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#eaecf0] bg-white px-3.5 py-2 text-xs font-semibold text-[#344054] shadow-xs transition hover:bg-[#f9fafb] hover:text-[#101828]"
               >
                 <Trash01 className="size-3.5 text-[#98a2b3]" />
-                <span>Reset Cache & Storage</span>
+                <span>Reset Cache &amp; Storage</span>
               </button>
 
               <button

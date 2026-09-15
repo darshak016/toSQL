@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { TableInfo } from '../types';
 import { 
   Database01, 
   Table, 
@@ -9,11 +10,16 @@ import {
   SearchLg, 
 } from './Icons';
 
-export default function SchemaSidebar({ tables = [], onPreviewTable }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [expandedTables, setExpandedTables] = useState({});
+interface SchemaSidebarProps {
+  tables: TableInfo[];
+  onPreviewTable: (tableName: string) => void;
+}
 
-  const toggleTable = (tableName) => {
+export default function SchemaSidebar({ tables = [], onPreviewTable }: SchemaSidebarProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>({});
+
+  const toggleTable = (tableName: string) => {
     setExpandedTables(prev => ({
       ...prev,
       [tableName]: !prev[tableName]
@@ -147,10 +153,10 @@ export default function SchemaSidebar({ tables = [], onPreviewTable }) {
                     borderRadius: 'var(--radius-sm)',
                   }}
                   onMouseEnter={e => {
-                    if (!isExpanded) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+                    if (!isExpanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
                   }}
                   onMouseLeave={e => {
-                    if (!isExpanded) e.currentTarget.style.backgroundColor = 'transparent';
+                    if (!isExpanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
@@ -203,12 +209,12 @@ export default function SchemaSidebar({ tables = [], onPreviewTable }) {
                         transition: 'all 0.15s ease',
                       }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.backgroundColor = 'var(--cohere-soft-stone)';
-                        e.currentTarget.style.color = 'var(--cohere-primary)';
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cohere-soft-stone)';
+                        (e.currentTarget as HTMLElement).style.color = 'var(--cohere-primary)';
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.color = 'var(--cohere-slate)';
+                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = 'var(--cohere-slate)';
                       }}
                     >
                       <Eye style={{ width: '0.75rem', height: '0.75rem' }} />

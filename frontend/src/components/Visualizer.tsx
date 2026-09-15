@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { ChartConfig } from '../types';
 import { BarChart03, BarLineChart, PieChart01 } from './Icons';
 
 // Cohere 2026 Curated Color Palette for Visualizations
@@ -13,12 +14,24 @@ const COHERE_CHART_PALETTE = [
   '#9b60aa', // Accent Violet
 ];
 
+interface VisualizerProps {
+  columns?: string[];
+  rows?: (string | number | null)[][];
+  suggestedChart?: string;
+  chartConfig?: ChartConfig;
+}
+
+interface DataPoint {
+  label: string;
+  value: number;
+}
+
 export default function Visualizer({ 
   columns = [], 
   rows = [], 
   suggestedChart = 'bar',
   chartConfig = {} 
-}) {
+}: VisualizerProps) {
   const [chartType, setChartType] = useState(suggestedChart || 'bar');
 
   if (!columns.length || !rows.length) {
@@ -56,10 +69,13 @@ export default function Visualizer({
   }
 
   // Format dataset (up to 10 items for crisp Cohere display)
-  const dataset = rows.slice(0, 10).map(row => ({
-    label: String(row[xIdx] ?? 'N/A'),
-    value: typeof row[yIdx] === 'number' ? row[yIdx] : parseFloat(row[yIdx]) || 0
-  }));
+  const dataset: DataPoint[] = rows.slice(0, 10).map(row => {
+    const rawValue = row[yIdx];
+    return {
+      label: String(row[xIdx] ?? 'N/A'),
+      value: typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue)) || 0
+    };
+  });
 
   const maxValue = Math.max(...dataset.map(d => d.value), 1);
   const totalValue = dataset.reduce((acc, d) => acc + (d.value > 0 ? d.value : 0), 0) || 1;

@@ -1,5 +1,14 @@
 import React from 'react';
+import type { PipelineStep, QueryAttempt } from '../types';
 import { Check, AlertCircle } from './Icons';
+
+interface PipelineVisualizerProps {
+  currentStep?: number;
+  steps?: PipelineStep[];
+  isGenerating?: boolean;
+  error?: string | null;
+  attempts?: QueryAttempt[];
+}
 
 export default function PipelineVisualizer({ 
   currentStep = 0, 
@@ -7,8 +16,8 @@ export default function PipelineVisualizer({
   isGenerating = false,
   error = null,
   attempts = []
-}) {
-  const defaultSteps = [
+}: PipelineVisualizerProps) {
+  const defaultSteps: PipelineStep[] = [
     {
       id: 'introspect',
       title: 'Schema Introspection',
@@ -126,7 +135,7 @@ export default function PipelineVisualizer({
         {pipeline.map((step, idx) => {
           const isDone = currentStep > idx || (!isGenerating && !error);
           const isCurrent = currentStep === idx && isGenerating;
-          const isFailed = currentStep === idx && error;
+          const isFailed = currentStep === idx && !!error;
 
           let bg = 'var(--cohere-soft-stone)';
           let borderColor = 'var(--cohere-hairline)';

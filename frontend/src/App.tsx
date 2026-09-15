@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import type { DbInfo, AiSettings, QueryResult, PreviewData, SampleQuery } from './types';
 import Navbar from './components/Navbar';
 import SchemaSidebar from './components/SchemaSidebar';
 import PromptSection from './components/PromptSection';
@@ -22,32 +23,32 @@ import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
 export default function App() {
   // DB & Schema State
-  const [dbInfo, setDbInfo] = useState(null);
+  const [dbInfo, setDbInfo] = useState<DbInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [samples, setSamples] = useState([]);
+  const [samples, setSamples] = useState<SampleQuery[]>([]);
 
   // Prompt & Query State
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExecutingSql, setIsExecutingSql] = useState(false);
-  const [queryResult, setQueryResult] = useState(null);
-  const [errorBanner, setErrorBanner] = useState(null);
-  const [activeTab, setActiveTab] = useState('table');
+  const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('table');
 
   // Pipeline Step Visualization State
   const [pipelineStep, setPipelineStep] = useState(0);
   const [pipelineVisible, setPipelineVisible] = useState(false);
-  const stepTimerRef = useRef(null);
+  const stepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Modals & Settings
   const [isConnectOpen, setIsConnectOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [previewTable, setPreviewTable] = useState(null);
-  const [previewData, setPreviewData] = useState(null);
+  const [previewTable, setPreviewTable] = useState<string | null>(null);
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   // AI Settings
-  const [aiSettings, setAiSettings] = useState(() => {
+  const [aiSettings, setAiSettings] = useState<AiSettings>(() => {
     try {
       const saved = localStorage.getItem('tosql_ai_settings');
       return saved ? JSON.parse(saved) : { provider: 'gemini', apiKey: '', modelName: 'gemini-2.5-flash' };
@@ -56,7 +57,7 @@ export default function App() {
     }
   });
 
-  const saveAiSettings = (newSettings) => {
+  const saveAiSettings = (newSettings: AiSettings) => {
     setAiSettings(newSettings);
     localStorage.setItem('tosql_ai_settings', JSON.stringify(newSettings));
   };
@@ -69,7 +70,7 @@ export default function App() {
       setDbInfo(data);
       setErrorBanner(null);
     } catch (err) {
-      setErrorBanner(`Could not load schema: ${err.message}. Ensure backend is running.`);
+      setErrorBanner(`Could not load schema: ${(err as Error).message}. Ensure backend is running.`);
     } finally {
       setIsRefreshing(false);
     }
@@ -83,7 +84,7 @@ export default function App() {
   }, []);
 
   // Handle Switch Database
-  const handleConnect = async (dbUrl, useSample) => {
+  const handleConnect = async (dbUrl: string, useSample: boolean) => {
     try {
       const res = await connectDatabase(dbUrl, useSample);
       setDbInfo({
@@ -95,19 +96,19 @@ export default function App() {
       setIsConnectOpen(false);
       setErrorBanner(null);
     } catch (err) {
-      alert(`Connection failed: ${err.message}`);
+      alert(`Connection failed: ${(err as Error).message}`);
     }
   };
 
   // Handle Preview Table
-  const handlePreviewTable = async (tableName) => {
+  const handlePreviewTable = async (tableName: string) => {
     setPreviewTable(tableName);
     setIsLoadingPreview(true);
     try {
       const data = await fetchTablePreview(tableName);
       setPreviewData(data);
     } catch (err) {
-      alert(`Could not preview table: ${err.message}`);
+      alert(`Could not preview table: ${(err as Error).message}`);
       setPreviewTable(null);
     } finally {
       setIsLoadingPreview(false);
@@ -152,14 +153,14 @@ export default function App() {
       }
     } catch (err) {
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
-      setErrorBanner(err.message);
+      setErrorBanner((err as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
   // Handle Manual SQL Execution
-  const handleExecuteEditedSql = async (sql) => {
+  const handleExecuteEditedSql = async (sql: string) => {
     setIsExecutingSql(true);
     setErrorBanner(null);
 
@@ -173,13 +174,13 @@ export default function App() {
         setErrorBanner(`SQL Execution Error: ${res.error}`);
       } else {
         setQueryResult(prev => ({
-          ...(prev || {}),
+          ...(prev || { success: true }),
           sql: res.sql,
           data: res.data
         }));
       }
     } catch (err) {
-      setErrorBanner(err.message);
+      setErrorBanner((err as Error).message);
     } finally {
       setIsExecutingSql(false);
     }
@@ -391,7 +392,7 @@ export default function App() {
           )}
 
           {/* Data Grid / Visualization Section */}
-          {queryResult?.data?.columns?.length > 0 && (
+          {queryResult?.data?.columns && queryResult.data.columns.length > 0 && (
             <div style={{
               overflow: 'hidden',
               borderRadius: 'var(--radius-sm)',
@@ -421,10 +422,10 @@ export default function App() {
                   backgroundColor: '#ffffff',
                   border: '1px solid var(--cohere-hairline)',
                 }}>
-                  {[
+                  {([
                     ['table', <Table key="t" style={{ width: '0.8rem', height: '0.8rem' }} />, `Data Grid (${queryResult.data.row_count})`],
                     ['chart', <BarChart03 key="b" style={{ width: '0.8rem', height: '0.8rem' }} />, 'Visualizer']
-                  ].map(([id, icon, label]) => (
+                  ] as [string, React.ReactNode, string][]).map(([id, icon, label]) => (
                     <button
                       key={id}
                       onClick={() => setActiveTab(id)}

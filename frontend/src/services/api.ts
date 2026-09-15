@@ -1,6 +1,16 @@
+import type {
+  DbInfo,
+  ConnectResponse,
+  PreviewData,
+  SampleQuery,
+  GenerateQueryParams,
+  ExecuteSqlParams,
+  QueryResult,
+} from '../types';
+
 const API_BASE = "http://127.0.0.1:8000/api";
 
-export async function fetchSchema(dbUrl = "") {
+export async function fetchSchema(dbUrl = ""): Promise<DbInfo> {
   const url = dbUrl ? `${API_BASE}/database/schema?db_url=${encodeURIComponent(dbUrl)}` : `${API_BASE}/database/schema`;
   const res = await fetch(url);
   if (!res.ok) {
@@ -10,7 +20,7 @@ export async function fetchSchema(dbUrl = "") {
   return res.json();
 }
 
-export async function connectDatabase(dbUrl = "", useSample = true) {
+export async function connectDatabase(dbUrl = "", useSample = true): Promise<ConnectResponse> {
   const res = await fetch(`${API_BASE}/database/connect`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -23,7 +33,7 @@ export async function connectDatabase(dbUrl = "", useSample = true) {
   return res.json();
 }
 
-export async function fetchTablePreview(tableName, dbUrl = "") {
+export async function fetchTablePreview(tableName: string, dbUrl = ""): Promise<PreviewData> {
   const url = dbUrl 
     ? `${API_BASE}/database/table-preview/${encodeURIComponent(tableName)}?db_url=${encodeURIComponent(dbUrl)}`
     : `${API_BASE}/database/table-preview/${encodeURIComponent(tableName)}`;
@@ -35,13 +45,13 @@ export async function fetchTablePreview(tableName, dbUrl = "") {
   return res.json();
 }
 
-export async function fetchSampleQueries() {
+export async function fetchSampleQueries(): Promise<{ samples: SampleQuery[] }> {
   const res = await fetch(`${API_BASE}/database/sample-queries`);
   if (!res.ok) return { samples: [] };
   return res.json();
 }
 
-export async function generateAndRunQuery({ prompt, dbUrl = "", apiKey = "", provider = "gemini", modelName = "" }) {
+export async function generateAndRunQuery({ prompt, dbUrl = "", apiKey = "", provider = "gemini", modelName = "" }: GenerateQueryParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/generate-and-run`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -60,7 +70,7 @@ export async function generateAndRunQuery({ prompt, dbUrl = "", apiKey = "", pro
   return res.json();
 }
 
-export async function executeDirectSql({ sql, dbUrl = "" }) {
+export async function executeDirectSql({ sql, dbUrl = "" }: ExecuteSqlParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/execute-sql`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -76,7 +86,7 @@ export async function executeDirectSql({ sql, dbUrl = "" }) {
   return res.json();
 }
 
-export async function fetchHistory() {
+export async function fetchHistory(): Promise<{ history: unknown[] }> {
   const res = await fetch(`${API_BASE}/query/history`);
   if (!res.ok) return { history: [] };
   return res.json();

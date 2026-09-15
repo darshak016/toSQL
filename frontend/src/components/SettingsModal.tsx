@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import type { AiSettings } from '../types';
 import { Key01, Check, XClose } from './Icons';
+
+interface SettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  settings: AiSettings;
+  onSaveSettings: (settings: AiSettings) => void;
+}
 
 export default function SettingsModal({ 
   isOpen, 
   onClose, 
   settings, 
   onSaveSettings 
-}) {
+}: SettingsModalProps) {
   const [provider, setProvider] = useState(settings.provider || 'gemini');
   const [apiKey, setApiKey] = useState(settings.apiKey || '');
   const [modelName, setModelName] = useState(settings.modelName || 'gemini-2.5-flash');
@@ -19,12 +27,12 @@ export default function SettingsModal({
 
   if (!isOpen) return null;
 
-  const handleProviderChange = (p) => {
+  const handleProviderChange = (p: string) => {
     setProvider(p);
     setModelName(p === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSaveSettings({ provider, apiKey: apiKey.trim(), modelName: modelName.trim() });
     onClose();

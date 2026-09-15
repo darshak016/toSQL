@@ -7,7 +7,12 @@ import {
   Table as TableIcon,
 } from './Icons';
 
-export default function ResultsTable({ columns = [], rows = [] }) {
+interface ResultsTableProps {
+  columns?: string[];
+  rows?: (string | number | null)[][];
+}
+
+export default function ResultsTable({ columns = [], rows = [] }: ResultsTableProps) {
   const [filterText, setFilterText] = useState('');
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
@@ -204,8 +209,8 @@ export default function ResultsTable({ columns = [], rows = [] }) {
                     backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#fafafa',
                     transition: 'background-color 0.1s ease',
                   }}
-                  onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--cohere-pale-blue)'}
-                  onMouseLeave={e => e.currentTarget.style.backgroundColor = rIdx % 2 === 0 ? '#ffffff' : '#fafafa'}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cohere-pale-blue)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = rIdx % 2 === 0 ? '#ffffff' : '#fafafa'}
                 >
                   {row.map((cell, cIdx) => (
                     <td

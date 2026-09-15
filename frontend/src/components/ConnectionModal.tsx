@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { Database01, Check, XClose } from './Icons';
 
+interface ConnectionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentDbUrl?: string;
+  onConnect: (dbUrl: string, useSample: boolean) => void;
+  isLoading: boolean;
+}
+
 export default function ConnectionModal({ 
   isOpen, 
   onClose, 
   currentDbUrl, 
   onConnect,
   isLoading 
-}) {
+}: ConnectionModalProps) {
   const [selectedType, setSelectedType] = useState('supabase');
   const [customUrl, setCustomUrl] = useState(
     currentDbUrl && !currentDbUrl.includes('ecommerce.db') ? currentDbUrl : ''
@@ -15,7 +23,7 @@ export default function ConnectionModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedType === 'sample') {
       onConnect('', true);

@@ -1,5 +1,14 @@
 import React from 'react';
+import type { QueryAttempt } from '../types';
 import { AnnotationInfo, Clock, LayersThree01, Zap } from './Icons';
+
+interface ExplanationCardProps {
+  explanation: string | null;
+  selfHealed?: boolean;
+  executionTimeMs?: number;
+  rowCount?: number;
+  attempts?: QueryAttempt[];
+}
 
 export default function ExplanationCard({ 
   explanation, 
@@ -7,7 +16,7 @@ export default function ExplanationCard({
   executionTimeMs, 
   rowCount,
   attempts 
-}) {
+}: ExplanationCardProps) {
   if (!explanation) return null;
 
   return (

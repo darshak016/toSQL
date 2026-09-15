@@ -1,5 +1,14 @@
 import React from 'react';
+import type { PreviewData } from '../types';
 import { Table, XClose, RefreshCw01 } from './Icons';
+
+interface TablePreviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  tableName: string | null;
+  previewData: PreviewData | null;
+  isLoading: boolean;
+}
 
 export default function TablePreviewModal({ 
   isOpen, 
@@ -7,7 +16,7 @@ export default function TablePreviewModal({
   tableName, 
   previewData, 
   isLoading 
-}) {
+}: TablePreviewModalProps) {
   if (!isOpen) return null;
 
   return (
