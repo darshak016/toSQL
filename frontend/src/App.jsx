@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import SchemaSidebar from './components/SchemaSidebar';
 import PromptSection from './components/PromptSection';
+import PipelineVisualizer from './components/PipelineVisualizer';
 import SqlViewer from './components/SqlViewer';
 import ExplanationCard from './components/ExplanationCard';
 import ResultsTable from './components/ResultsTable';
@@ -32,6 +33,11 @@ export default function App() {
   const [queryResult, setQueryResult] = useState(null);
   const [errorBanner, setErrorBanner] = useState(null);
   const [activeTab, setActiveTab] = useState('table');
+
+  // Pipeline Step Visualization State
+  const [pipelineStep, setPipelineStep] = useState(0);
+  const [pipelineVisible, setPipelineVisible] = useState(false);
+  const stepTimerRef = useRef(null);
 
   // Modals & Settings
   const [isConnectOpen, setIsConnectOpen] = useState(false);
@@ -108,11 +114,19 @@ export default function App() {
     }
   };
 
-  // Handle Generate & Run
+  // Handle Generate & Run with Pipeline Visualization
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsLoading(true);
     setErrorBanner(null);
+    setPipelineVisible(true);
+    setPipelineStep(0);
+
+    // Animate behind-the-scenes steps smoothly
+    if (stepTimerRef.current) clearInterval(stepTimerRef.current);
+    stepTimerRef.current = setInterval(() => {
+      setPipelineStep((prev) => (prev < 3 ? prev + 1 : prev));
+    }, 450);
 
     try {
       const res = await generateAndRunQuery({
@@ -123,18 +137,21 @@ export default function App() {
         modelName: aiSettings.modelName
       });
 
+      if (stepTimerRef.current) clearInterval(stepTimerRef.current);
+      setPipelineStep(4); // Final step: Output & Visualization
+
       if (!res.success) {
         setErrorBanner(res.error || "Query generation was rejected or failed execution.");
       }
 
       setQueryResult(res);
-      // If AI suggested a chart and we have rows, switch to chart tab
       if (res.suggested_chart && res.suggested_chart !== 'table' && res.data?.rows?.length) {
         setActiveTab('chart');
       } else {
         setActiveTab('table');
       }
     } catch (err) {
+      if (stepTimerRef.current) clearInterval(stepTimerRef.current);
       setErrorBanner(err.message);
     } finally {
       setIsLoading(false);
@@ -187,7 +204,7 @@ export default function App() {
         apiKeyConfigured={Boolean(aiSettings.apiKey)}
       />
 
-      {/* Main Workspace: Full viewport height minus navbar */}
+      {/* Main Workspace */}
       <div style={{
         display: 'flex',
         flex: 1,
@@ -195,13 +212,13 @@ export default function App() {
         height: 'calc(100vh - 3.5rem)',
         overflow: 'hidden',
       }}>
-        {/* Schema Index Sidebar with its own independent scroll */}
+        {/* Schema Index Sidebar */}
         <SchemaSidebar
           tables={dbInfo?.tables || []}
           onPreviewTable={handlePreviewTable}
         />
 
-        {/* Central Content Area with independent vertical scroll */}
+        {/* Central Content Area */}
         <main style={{
           display: 'flex',
           flex: 1,
@@ -261,8 +278,20 @@ export default function App() {
             />
           </div>
 
+          {/* Pipeline Visualizer: Live Behind-the-Scenes Stages */}
+          {(pipelineVisible || isLoading) && (
+            <div style={{ flexShrink: 0 }}>
+              <PipelineVisualizer
+                currentStep={pipelineStep}
+                isGenerating={isLoading}
+                error={errorBanner}
+                attempts={queryResult?.attempts || []}
+              />
+            </div>
+          )}
+
           {/* Welcome Typographic Declaration (When No Results Yet) */}
-          {!queryResult && !isLoading && (
+          {!queryResult && !isLoading && !pipelineVisible && (
             <div style={{
               display: 'flex',
               flexDirection: 'column',
