@@ -7,6 +7,7 @@ import {
   Key01, 
   Check,
   Clock,
+  Share04,
 } from './Icons';
 
 interface NavbarProps {
@@ -18,6 +19,7 @@ interface NavbarProps {
   onRefreshSchema: () => void;
   isRefreshing: boolean;
   apiKeyConfigured: boolean;
+  onOpenErd?: () => void;
 }
 
 export default function Navbar({ 
@@ -28,7 +30,8 @@ export default function Navbar({
   historyCount,
   onRefreshSchema,
   isRefreshing,
-  apiKeyConfigured
+  apiKeyConfigured,
+  onOpenErd,
 }: NavbarProps) {
   const dbType = dbInfo?.database_type?.toUpperCase() || 'SQLITE';
   const tableCount = dbInfo?.table_count || 0;
@@ -158,6 +161,23 @@ export default function Navbar({
           <Key01 style={{ width: '0.8rem', height: '0.8rem' }} />
           <span>{apiKeyConfigured ? 'Gemini 2.5 Flash' : 'Demo Mode (Mock AI)'}</span>
         </button>
+
+        {/* Schema ERD Button */}
+        {onOpenErd && (
+          <button
+            onClick={onOpenErd}
+            className="btn-cohere-pill-outline"
+            style={{
+              fontSize: '12px',
+              padding: '5px 12px',
+              color: 'var(--cohere-ink)',
+            }}
+            title="Open Entity Relationship Diagram (ERD)"
+          >
+            <Share04 style={{ width: '0.8rem', height: '0.8rem', color: 'var(--cohere-primary)' }} />
+            <span>Schema ERD</span>
+          </button>
+        )}
 
         {/* History & Favorites Drawer Button */}
         <button

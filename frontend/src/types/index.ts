@@ -6,9 +6,17 @@ export interface ColumnInfo {
   primary_key?: boolean;
 }
 
+export interface ForeignKeyInfo {
+  constrained_columns: string[];
+  referred_table?: string;
+  referred_columns: string[];
+}
+
 export interface TableInfo {
   name: string;
+  row_count?: number;
   columns: ColumnInfo[];
+  foreign_keys?: ForeignKeyInfo[];
 }
 
 export interface DbInfo {

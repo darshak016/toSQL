@@ -90,8 +90,10 @@ Below is the breakdown of potential improvements categorized by impact and archi
 ### Phase 3: Visual Analytics & Schema Exploration
 - **3.1 Enhanced Interactive Visualizer**:
   - Rich tooltips, formatted currencies/numbers, responsive chart layout.
-- **3.2 Database Relationship Graph / Schema Overview**:
-  - Quick visual view of how tables connect via Foreign Keys.
+- **3.2 Database Relationship Graph / Schema Overview (ERD)** ✅ *(Completed)*:
+  - Created `ErdModal.tsx` displaying interactive Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations.
+  - Added filterable search and interactive foreign-key chip navigation.
+  - Linked "Schema ERD" actions directly into `Navbar.tsx` and `SchemaSidebar.tsx`.
 
 ---
 

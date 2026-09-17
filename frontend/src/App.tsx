@@ -12,6 +12,7 @@ import ConnectionModal from './components/ConnectionModal';
 import SettingsModal from './components/SettingsModal';
 import TablePreviewModal from './components/TablePreviewModal';
 import HistoryModal from './components/HistoryModal';
+import ErdModal from './components/ErdModal';
 import { 
   fetchSchema, 
   connectDatabase, 
@@ -66,6 +67,7 @@ export default function App() {
   // Modals & Settings
   const [isConnectOpen, setIsConnectOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isErdOpen, setIsErdOpen] = useState(false);
   const [previewTable, setPreviewTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
@@ -295,6 +297,7 @@ export default function App() {
         onRefreshSchema={loadSchema}
         isRefreshing={isRefreshing}
         apiKeyConfigured={Boolean(aiSettings.apiKey)}
+        onOpenErd={() => setIsErdOpen(true)}
       />
 
       {/* Main Workspace */}
@@ -309,6 +312,7 @@ export default function App() {
         <SchemaSidebar
           tables={dbInfo?.tables || []}
           onPreviewTable={handlePreviewTable}
+          onOpenErd={() => setIsErdOpen(true)}
         />
 
         {/* Central Content Area */}
@@ -625,6 +629,18 @@ export default function App() {
         onToggleFavorite={handleToggleFavorite}
         onClearHistory={handleClearHistory}
         onRemoveItem={handleRemoveHistoryItem}
+      />
+
+      {/* Interactive Schema ERD Dialog */}
+      <ErdModal
+        isOpen={isErdOpen}
+        onClose={() => setIsErdOpen(false)}
+        tables={dbInfo?.tables || []}
+        databaseType={dbInfo?.database_type}
+        onPreviewTable={(tbl) => {
+          setIsErdOpen(false);
+          handlePreviewTable(tbl);
+        }}
       />
     </div>
   );

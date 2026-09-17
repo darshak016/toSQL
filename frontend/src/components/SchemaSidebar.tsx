@@ -8,14 +8,16 @@ import {
   Eye, 
   Key01, 
   SearchLg, 
+  Share04,
 } from './Icons';
 
 interface SchemaSidebarProps {
   tables: TableInfo[];
   onPreviewTable: (tableName: string) => void;
+  onOpenErd?: () => void;
 }
 
-export default function SchemaSidebar({ tables = [], onPreviewTable }: SchemaSidebarProps) {
+export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }: SchemaSidebarProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>({});
 
@@ -64,18 +66,39 @@ export default function SchemaSidebar({ tables = [], onPreviewTable }: SchemaSid
             Schema Index
           </span>
         </div>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.7rem',
-          fontWeight: 600,
-          color: 'var(--cohere-primary)',
-          backgroundColor: '#ffffff',
-          border: '1px solid var(--cohere-hairline)',
-          padding: '2px 8px',
-          borderRadius: 'var(--radius-xl)',
-        }}>
-          {tables.length}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          {onOpenErd && (
+            <button
+              onClick={onOpenErd}
+              className="btn-cohere-pill-outline"
+              style={{
+                fontSize: '11px',
+                padding: '2px 7px',
+                color: 'var(--cohere-primary)',
+                borderColor: 'var(--cohere-hairline)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+              }}
+              title="View Schema ERD Graph"
+            >
+              <Share04 style={{ width: '0.7rem', height: '0.7rem' }} />
+              <span>ERD</span>
+            </button>
+          )}
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.7rem',
+            fontWeight: 600,
+            color: 'var(--cohere-primary)',
+            backgroundColor: '#ffffff',
+            border: '1px solid var(--cohere-hairline)',
+            padding: '2px 8px',
+            borderRadius: 'var(--radius-xl)',
+          }}>
+            {tables.length}
+          </span>
+        </div>
       </div>
 
       {/* Search Input */}
