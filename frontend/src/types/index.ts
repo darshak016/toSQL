@@ -47,11 +47,20 @@ export interface ChartConfig {
   title?: string;
 }
 
+export interface QueryBreakdown {
+  tables_used?: string[];
+  joins?: string[];
+  filters?: string[];
+  aggregations?: string[];
+  assumptions?: string[];
+}
+
 export interface QueryResult {
   success: boolean;
   sql?: string;
   data?: QueryData;
   explanation?: string;
+  breakdown?: QueryBreakdown;
   self_healed?: boolean;
   suggested_chart?: string;
   chart_config?: ChartConfig;
@@ -67,6 +76,8 @@ export interface GenerateQueryParams {
   apiKey?: string;
   provider?: string;
   modelName?: string;
+  previousSql?: string;
+  previousPrompt?: string;
 }
 
 export interface ExecuteSqlParams {

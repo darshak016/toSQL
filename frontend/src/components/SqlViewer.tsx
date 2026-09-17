@@ -12,18 +12,31 @@ import { formatSql } from '../utils/sqlFormatter';
 
 function highlightSql(sql: string): React.ReactNode[] {
   if (!sql) return [];
-  const keywords = /\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|AS|ON|AND|OR|NOT|IN|IS|NULL|COUNT|SUM|AVG|MAX|MIN|DISTINCT|CASE|WHEN|THEN|ELSE|END|BETWEEN|LIKE|ASC|DESC|WITH|UNION|INTERSECT|EXCEPT|CREATE|DROP|INSERT|UPDATE|DELETE|ALTER|INDEX|VIEW)\b/gi;
-  const numbers = /\b(\d+(\.\d+)?)\b/g;
-  const strings = /('(?:''|[^'])*')/g;
+
+  const tokenRegex = /('(?:''|[^'])*')|\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|AS|ON|AND|OR|NOT|IN|IS|NULL|COUNT|SUM|AVG|MAX|MIN|DISTINCT|CASE|WHEN|THEN|ELSE|END|BETWEEN|LIKE|ASC|DESC|WITH|UNION|INTERSECT|EXCEPT|CREATE|DROP|INSERT|UPDATE|DELETE|ALTER|INDEX|VIEW)\b|\b(\d+(?:\.\d+)?)\b/gi;
 
   return sql.split('\n').map((line, idx) => {
-    const html = line
+    // Escape HTML special characters
+    let html = line
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(strings, '<span style="color:#059669;font-weight:500">$1</span>')
-      .replace(keywords, (m) => `<span style="color:#1d4ed8;font-weight:700">${m.toUpperCase()}</span>`)
-      .replace(numbers, '<span style="color:#d97706;font-weight:600">$1</span>');
+      .replace(/>/g, '&gt;');
+
+    // Use a single regex token replacement so we don't match inside injected HTML attributes
+    const tokenRegex = /('(?:''|[^'])*')|\b(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|AS|ON|AND|OR|NOT|IN|IS|NULL|COUNT|SUM|AVG|MAX|MIN|DISTINCT|CASE|WHEN|THEN|ELSE|END|BETWEEN|LIKE|ASC|DESC|WITH|UNION|INTERSECT|EXCEPT|CREATE|DROP|INSERT|UPDATE|DELETE|ALTER|INDEX|VIEW)\b|\b(\d+(?:\.\d+)?)\b/gi;
+
+    html = html.replace(tokenRegex, (_match, str, kw, num) => {
+      if (str !== undefined) {
+        return `<span style="color:#059669;font-weight:500">${str}</span>`;
+      }
+      if (kw !== undefined) {
+        return `<span style="color:#1d4ed8;font-weight:700">${kw.toUpperCase()}</span>`;
+      }
+      if (num !== undefined) {
+        return `<span style="color:#d97706;font-weight:600">${num}</span>`;
+      }
+      return _match;
+    });
     return (
       <div key={idx} style={{ display: 'table-row' }}>
         <span style={{

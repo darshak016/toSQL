@@ -51,7 +51,15 @@ export async function fetchSampleQueries(): Promise<{ samples: SampleQuery[] }> 
   return res.json();
 }
 
-export async function generateAndRunQuery({ prompt, dbUrl = "", apiKey = "", provider = "gemini", modelName = "" }: GenerateQueryParams): Promise<QueryResult> {
+export async function generateAndRunQuery({
+  prompt,
+  dbUrl = "",
+  apiKey = "",
+  provider = "gemini",
+  modelName = "",
+  previousSql,
+  previousPrompt
+}: GenerateQueryParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/generate-and-run`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -60,7 +68,9 @@ export async function generateAndRunQuery({ prompt, dbUrl = "", apiKey = "", pro
       db_url: dbUrl || null,
       api_key: apiKey || null,
       provider: provider || "gemini",
-      model_name: modelName || null
+      model_name: modelName || null,
+      previous_sql: previousSql || null,
+      previous_prompt: previousPrompt || null
     })
   });
   if (!res.ok) {

@@ -77,10 +77,15 @@ Below is the breakdown of potential improvements categorized by impact and archi
   - One-click copy table to Markdown.
 
 ### Phase 2: AI Intelligence & Conversational Flow
-- **2.1 Conversational / Follow-up Prompting**:
-  - Pass the active query context (`previous_sql`, `previous_prompt`, `user_refinement`) to the prompt builder when the user refines a query.
-- **2.2 Structured Query Explanation**:
-  - Present AI rationale in structured badges (Tables Used, Filters, Aggregations).
+- **2.1 Conversational / Follow-up Prompting** ✅ *(Completed)*:
+  - Passed active query context (`previous_sql`, `previous_prompt`, `user_refinement`) through API endpoints, engine, and LLM prompt builder.
+  - Added Follow-Up Mode UI badge, one-click "New Thread" reset, and quick refinement chips in `PromptSection.tsx`.
+  - Added full test coverage in `test_llm_pipeline.py`.
+- **2.2 Structured Query Explanation** ✅ *(Completed)*:
+  - Added structured breakdown model (`QueryBreakdown`) in `schemas.py` capturing `tables_used`, `joins`, `filters`, `aggregations`, and `assumptions`.
+  - Added prompt instructions and fallback AST extractor in `self_healer.py`.
+  - Rendered structured tag grid in `ExplanationCard.tsx` with themed badges for referenced tables, join conditions, applied filters, and aggregations.
+  - Added test verification in `test_llm_pipeline.py`.
 
 ### Phase 3: Visual Analytics & Schema Exploration
 - **3.1 Enhanced Interactive Visualizer**:

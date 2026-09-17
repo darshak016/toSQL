@@ -61,7 +61,19 @@ toSQL/
 
 ## ⚡ Quick Start
 
-### 1. Backend Setup
+### Option A: Start Both Services with One Command (Recommended)
+
+From the root directory:
+```powershell
+python run.py
+```
+This will automatically launch both the FastAPI backend (`http://127.0.0.1:8000`) and the Vite React frontend (`http://localhost:5173`), and cleanly terminate both on `Ctrl+C`.
+
+---
+
+### Option B: Manual Setup
+
+#### 1. Backend Setup
 
 From the root directory:
 ```powershell

@@ -8,6 +8,11 @@ interface PromptSectionProps {
   onGenerate: () => void;
   isLoading: boolean;
   samples?: SampleQuery[];
+  activeQuery?: {
+    sql?: string;
+    prompt?: string;
+  } | null;
+  onClearContext?: () => void;
 }
 
 export default function PromptSection({
@@ -15,7 +20,9 @@ export default function PromptSection({
   setPrompt,
   onGenerate,
   isLoading,
-  samples = []
+  samples = [],
+  activeQuery,
+  onClearContext,
 }: PromptSectionProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -90,8 +97,75 @@ export default function PromptSection({
         </div>
       </div>
 
-      {/* Cohere Taxonomy Chips for Samples */}
-      {samples.length > 0 && (
+      {/* Conversational Follow-up Context Pill */}
+      {activeQuery?.sql && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.5rem',
+          padding: '0.5rem 0.75rem',
+          marginBottom: '0.75rem',
+          borderRadius: 'var(--radius-xs)',
+          backgroundColor: '#eff6ff',
+          border: '1px solid #bfdbfe',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '1px 6px',
+              borderRadius: 'var(--radius-xs)',
+              backgroundColor: '#dbeafe',
+              color: '#1d4ed8',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              flexShrink: 0
+            }}>
+              Follow-Up Mode
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.75rem',
+              color: '#1e40af',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              Refining: {activeQuery.prompt || "Previous Query"}
+            </span>
+          </div>
+          {onClearContext && (
+            <button
+              onClick={onClearContext}
+              title="Start fresh new query"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.7rem',
+                color: '#60a5fa',
+                padding: '2px 6px',
+                borderRadius: 'var(--radius-xs)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3px',
+                flexShrink: 0
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#1e3a8a')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#60a5fa')}
+            >
+              <span>New Thread ✕</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Suggested Quick Refinement Chips when in Follow-up Mode */}
+      {activeQuery?.sql ? (
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -109,26 +183,71 @@ export default function PromptSection({
             flexShrink: 0,
             textTransform: 'uppercase',
           }}>
-            Suggested:
+            Quick Refine:
           </span>
-          {samples.map((item, idx) => (
+          {[
+            { label: 'Only top 3', val: 'Only show the top 3' },
+            { label: 'Filter to USA', val: 'Filter to only customers from the USA' },
+            { label: 'Sort lowest first', val: 'Sort ascending (lowest first)' },
+            { label: 'Add email column', val: 'Include the email column as well' },
+          ].map((chip, idx) => (
             <button
               key={idx}
               className="chip-cohere-taxonomy"
-              onClick={() => setPrompt(item.prompt)}
-              title={item.prompt}
+              onClick={() => setPrompt(chip.val)}
               style={{
                 fontSize: '11px',
-                padding: '4px 10px',
-                borderColor: prompt === item.prompt ? 'var(--cohere-coral)' : 'var(--cohere-hairline)',
-                backgroundColor: prompt === item.prompt ? 'var(--cohere-coral)' : 'var(--cohere-soft-stone)',
-                color: prompt === item.prompt ? '#ffffff' : 'var(--cohere-ink)',
+                padding: '3px 9px',
+                borderColor: prompt === chip.val ? 'var(--cohere-action-blue)' : 'var(--cohere-hairline)',
+                backgroundColor: prompt === chip.val ? '#dbeafe' : 'var(--cohere-soft-stone)',
+                color: prompt === chip.val ? '#1e40af' : 'var(--cohere-ink)',
               }}
             >
-              <span>{item.title}</span>
+              <span>{chip.label}</span>
             </button>
           ))}
         </div>
+      ) : (
+        /* Cohere Taxonomy Chips for Samples */
+        samples.length > 0 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            overflowX: 'auto',
+            paddingBottom: '0.625rem',
+            marginBottom: '0.5rem',
+          }}>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              color: 'var(--cohere-muted)',
+              letterSpacing: '0.05em',
+              flexShrink: 0,
+              textTransform: 'uppercase',
+            }}>
+              Suggested:
+            </span>
+            {samples.map((item, idx) => (
+              <button
+                key={idx}
+                className="chip-cohere-taxonomy"
+                onClick={() => setPrompt(item.prompt)}
+                title={item.prompt}
+                style={{
+                  fontSize: '11px',
+                  padding: '4px 10px',
+                  borderColor: prompt === item.prompt ? 'var(--cohere-coral)' : 'var(--cohere-hairline)',
+                  backgroundColor: prompt === item.prompt ? 'var(--cohere-coral)' : 'var(--cohere-soft-stone)',
+                  color: prompt === item.prompt ? '#ffffff' : 'var(--cohere-ink)',
+                }}
+              >
+                <span>{item.title}</span>
+              </button>
+            ))}
+          </div>
+        )
       )}
 
       {/* Light Textarea Input Area */}

@@ -205,7 +205,9 @@ export default function App() {
         dbUrl: dbInfo?.active_db_url,
         apiKey: aiSettings.apiKey,
         provider: aiSettings.provider,
-        modelName: aiSettings.modelName
+        modelName: aiSettings.modelName,
+        previousSql: queryResult?.sql || undefined,
+        previousPrompt: queryResult?.prompt || undefined
       });
 
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
@@ -366,6 +368,12 @@ export default function App() {
               onGenerate={handleGenerate}
               isLoading={isLoading}
               samples={samples}
+              activeQuery={queryResult?.sql ? { sql: queryResult.sql, prompt: queryResult.prompt } : null}
+              onClearContext={() => {
+                setQueryResult(null);
+                setPrompt('');
+                setPipelineVisible(false);
+              }}
             />
           </div>
 
@@ -473,6 +481,7 @@ export default function App() {
             <div style={{ flexShrink: 0 }}>
               <ExplanationCard
                 explanation={queryResult.explanation}
+                breakdown={queryResult.breakdown}
                 selfHealed={queryResult.self_healed}
                 executionTimeMs={queryResult.data?.execution_time_ms}
                 rowCount={queryResult.data?.row_count}
