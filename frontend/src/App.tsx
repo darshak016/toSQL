@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { DbInfo, AiSettings, QueryResult, PreviewData, SampleQuery, HistoryItem } from './types';
+import type { 
+  DbInfo, 
+  AiSettings, 
+  QueryResult, 
+  PreviewData, 
+  SampleQuery, 
+  HistoryItem,
+  ExplainPlanResponse 
+} from './types';
 import Navbar from './components/Navbar';
 import SchemaSidebar from './components/SchemaSidebar';
 import PromptSection from './components/PromptSection';
@@ -13,14 +21,17 @@ import SettingsModal from './components/SettingsModal';
 import TablePreviewModal from './components/TablePreviewModal';
 import HistoryModal from './components/HistoryModal';
 import ErdModal from './components/ErdModal';
+import ExplainPlanModal from './components/ExplainPlanModal';
 import { 
   fetchSchema, 
   connectDatabase, 
   fetchSampleQueries, 
   fetchTablePreview, 
   generateAndRunQuery, 
-  executeDirectSql 
+  executeDirectSql,
+  fetchExplainPlan
 } from './services/api';
+
 import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
 const STORAGE_KEY_HISTORY = 'tosql_query_history_v1';
@@ -68,9 +79,13 @@ export default function App() {
   const [isConnectOpen, setIsConnectOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isErdOpen, setIsErdOpen] = useState(false);
+  const [isExplainOpen, setIsExplainOpen] = useState(false);
+  const [explainPlan, setExplainPlan] = useState<ExplainPlanResponse | null>(null);
+  const [isExplainingPlan, setIsExplainingPlan] = useState(false);
   const [previewTable, setPreviewTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
 
   // AI Settings
   const [aiSettings, setAiSettings] = useState<AiSettings>(() => {
@@ -278,6 +293,38 @@ export default function App() {
     }
   };
 
+  // Handle Query Execution Plan (EXPLAIN)
+  const handleExplainPlan = async (targetSql: string) => {
+    if (!targetSql.trim()) return;
+    setIsExplainingPlan(true);
+    setIsExplainOpen(true);
+    setExplainPlan(null);
+
+    try {
+      const planRes = await fetchExplainPlan({
+        sql: targetSql,
+        dbUrl: dbInfo?.active_db_url
+      });
+      setExplainPlan(planRes);
+    } catch (err) {
+      setExplainPlan({
+        success: false,
+        dialect: dbInfo?.database_type || 'sqlite',
+        plan_type: 'EXPLAIN',
+        raw_plan: [],
+        plan_rows: [],
+        has_table_scan: false,
+        has_index_lookup: false,
+        execution_time_ms: 0,
+        sql: targetSql,
+        error: (err as Error).message || 'Failed to explain query plan'
+      });
+    } finally {
+      setIsExplainingPlan(false);
+    }
+  };
+
+
   return (
     <div style={{
       display: 'flex',
@@ -476,7 +523,10 @@ export default function App() {
                 dialect={dbInfo?.database_type || 'sqlite'}
                 onExecuteSql={handleExecuteEditedSql}
                 isExecuting={isExecutingSql}
+                onExplainPlan={handleExplainPlan}
+                isExplaining={isExplainingPlan}
               />
+
             </div>
           )}
 
@@ -642,6 +692,16 @@ export default function App() {
           handlePreviewTable(tbl);
         }}
       />
+
+      {/* Query Execution Plan (EXPLAIN) Dialog */}
+      <ExplainPlanModal
+        isOpen={isExplainOpen}
+        onClose={() => setIsExplainOpen(false)}
+        plan={explainPlan}
+        isLoading={isExplainingPlan}
+        sql={queryResult?.sql || ''}
+      />
     </div>
   );
 }
+

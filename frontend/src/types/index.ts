@@ -65,6 +65,7 @@ export interface QueryBreakdown {
 
 export interface QueryResult {
   success: boolean;
+  prompt?: string;
   sql?: string;
   data?: QueryData;
   explanation?: string;
@@ -75,6 +76,7 @@ export interface QueryResult {
   attempts?: QueryAttempt[];
   error?: string;
 }
+
 
 // ─── API Request / Response Types ────────────────────────────────────
 
@@ -131,4 +133,27 @@ export interface HistoryItem {
   executionTimeMs?: number;
   isFavorite?: boolean;
 }
+
+// ─── Query Execution Plan (EXPLAIN) ──────────────────────────────────
+
+export interface ExplainPlanRequest {
+  sql: string;
+  db_url?: string;
+  dbUrl?: string;
+}
+
+
+export interface ExplainPlanResponse {
+  success: boolean;
+  dialect: string;
+  plan_type: string;
+  raw_plan: string[];
+  plan_rows: Record<string, string | number | null>[];
+  has_table_scan: boolean;
+  has_index_lookup: boolean;
+  execution_time_ms: number;
+  sql: string;
+  error?: string | null;
+}
+
 

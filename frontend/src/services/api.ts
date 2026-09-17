@@ -6,7 +6,10 @@ import type {
   GenerateQueryParams,
   ExecuteSqlParams,
   QueryResult,
+  ExplainPlanResponse,
+  ExplainPlanRequest,
 } from '../types';
+
 
 const API_BASE = "http://127.0.0.1:8000/api";
 
@@ -101,3 +104,20 @@ export async function fetchHistory(): Promise<{ history: unknown[] }> {
   if (!res.ok) return { history: [] };
   return res.json();
 }
+
+export async function fetchExplainPlan({ sql, dbUrl = "" }: ExplainPlanRequest): Promise<ExplainPlanResponse> {
+  const res = await fetch(`${API_BASE}/query/explain-sql`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sql,
+      db_url: dbUrl || null
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Failed to generate query execution plan" }));
+    throw new Error(err.detail || "Failed to generate query execution plan");
+  }
+  return res.json();
+}
+

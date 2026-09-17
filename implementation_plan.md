@@ -27,9 +27,10 @@ Below is the breakdown of potential improvements categorized by impact and archi
 1. **Interactive Query History & Bookmarking / Favorites**:
    - *Current*: `query_history` is an ephemeral in-memory Python array that clears whenever the backend restarts, and isn't persistable or bookmarkable in the UI.
    - *Improvement*: Persistent query history (SQLite or LocalStorage), with the ability to tag, name, star/favorite queries, and re-run them with one click.
-2. **SQL Execution Plan (`EXPLAIN / EXPLAIN QUERY PLAN`)**:
-   - *Current*: Queries only return execution time in ms.
-   - *Improvement*: Add an "Explain Query Plan" toggle for PostgreSQL/SQLite/MySQL so engineers can inspect indexes used, scan costs, and join strategies.
+2. **SQL Execution Plan (`EXPLAIN / EXPLAIN QUERY PLAN`)** ✅ *(Completed)*:
+   - *Implemented*: `QueryRunner.explain_query(...)` and `validate_query_for_explain` with AST guardrail protections; added API endpoint `POST /query/explain-sql`.
+   - *UI*: Added "Explain Plan" inspection button to `SqlViewer.tsx` opening an interactive `ExplainPlanModal.tsx` modal with visual execution node breakdown, table scan vs index lookup detection, raw output copy, and timing metrics.
+
 3. **Exporting Capabilities**:
    - *Current*: Basic CSV download.
    - *Improvement*: Add **Excel (.xlsx)** and **JSON** exports, as well as "Copy as Markdown Table" or "Copy as Insert Statements".

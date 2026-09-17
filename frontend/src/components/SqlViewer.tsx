@@ -7,7 +7,9 @@ import {
   Copy01, 
   Check, 
   Zap,
+  Activity,
 } from './Icons';
+
 import { formatSql } from '../utils/sqlFormatter';
 
 function highlightSql(sql: string): React.ReactNode[] {
@@ -71,9 +73,18 @@ interface SqlViewerProps {
   dialect?: string;
   onExecuteSql?: (sql: string) => void;
   isExecuting?: boolean;
+  onExplainPlan?: (sql: string) => void;
+  isExplaining?: boolean;
 }
 
-export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExecuting }: SqlViewerProps) {
+export default function SqlViewer({ 
+  sql, 
+  dialect = 'sqlite', 
+  onExecuteSql, 
+  isExecuting,
+  onExplainPlan,
+  isExplaining
+}: SqlViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editableSql, setEditableSql] = useState(sql || '');
   const [copied, setCopied] = useState(false);
@@ -83,7 +94,9 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
 
   const handleRun = () => { if (onExecuteSql && editableSql.trim()) onExecuteSql(editableSql); };
   const handleReset = () => { setEditableSql(sql || ''); setIsEditing(false); };
+  const handleExplain = () => { if (onExplainPlan && editableSql.trim()) onExplainPlan(editableSql); };
   const handleCopy = () => {
+
     navigator.clipboard.writeText(editableSql);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -146,6 +159,21 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
+            onClick={handleExplain}
+            disabled={isExplaining}
+            className="btn-cohere-pill-outline"
+            style={{ 
+              padding: '4px 10px', 
+              fontSize: '11px',
+              color: 'var(--cohere-ink)'
+            }}
+            title="Inspect query execution plan (EXPLAIN QUERY PLAN)"
+          >
+            <Activity style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-primary)' }} />
+            <span>{isExplaining ? 'Explaining...' : 'Explain Plan'}</span>
+          </button>
+
+          <button
             onClick={handleFormat}
             className="btn-cohere-pill-outline"
             style={{ 
@@ -169,6 +197,7 @@ export default function SqlViewer({ sql, dialect = 'sqlite', onExecuteSql, isExe
               </>
             )}
           </button>
+
 
           <button
             onClick={handleCopy}
