@@ -8,6 +8,7 @@ import {
   Check,
   Clock,
   Share04,
+  BookOpen,
 } from './Icons';
 
 interface NavbarProps {
@@ -16,6 +17,8 @@ interface NavbarProps {
   onOpenSettings: () => void;
   onOpenHistory: () => void;
   historyCount: number;
+  onOpenDictionary?: () => void;
+  dictionaryCount?: number;
   onRefreshSchema: () => void;
   isRefreshing: boolean;
   apiKeyConfigured: boolean;
@@ -28,11 +31,14 @@ export default function Navbar({
   onOpenSettings, 
   onOpenHistory,
   historyCount,
+  onOpenDictionary,
+  dictionaryCount = 0,
   onRefreshSchema,
   isRefreshing,
   apiKeyConfigured,
   onOpenErd,
 }: NavbarProps) {
+
   const dbType = dbInfo?.database_type?.toUpperCase() || 'SQLITE';
   const tableCount = dbInfo?.table_count || 0;
 
@@ -179,7 +185,39 @@ export default function Navbar({
           </button>
         )}
 
+        {/* Semantic Dictionary & Few-Shots Button */}
+        {onOpenDictionary && (
+          <button
+            onClick={onOpenDictionary}
+            className="btn-cohere-pill-outline"
+            style={{
+              fontSize: '12px',
+              padding: '5px 12px',
+              color: 'var(--cohere-ink)',
+            }}
+            title="Open Semantic Dictionary & Few-Shot Rules"
+          >
+            <BookOpen style={{ width: '0.8rem', height: '0.8rem', color: 'var(--cohere-primary)' }} />
+            <span>Dictionary</span>
+            {dictionaryCount > 0 && (
+              <span style={{
+                fontSize: '10px',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700,
+                backgroundColor: 'var(--cohere-primary)',
+                color: '#ffffff',
+                padding: '1px 6px',
+                borderRadius: 'var(--radius-full)',
+                marginLeft: '2px',
+              }}>
+                {dictionaryCount}
+              </span>
+            )}
+          </button>
+        )}
+
         {/* History & Favorites Drawer Button */}
+
         <button
           onClick={onOpenHistory}
           className="btn-cohere-pill-outline"

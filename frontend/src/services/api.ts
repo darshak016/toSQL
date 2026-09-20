@@ -8,6 +8,7 @@ import type {
   QueryResult,
   ExplainPlanResponse,
   ExplainPlanRequest,
+  DictionaryConfig,
 } from '../types';
 
 
@@ -54,6 +55,25 @@ export async function fetchSampleQueries(): Promise<{ samples: SampleQuery[] }> 
   return res.json();
 }
 
+export async function fetchDatabaseDictionary(): Promise<DictionaryConfig> {
+  const res = await fetch(`${API_BASE}/database/dictionary`);
+  if (!res.ok) return { terms: [], few_shots: [] };
+  return res.json();
+}
+
+export async function saveDatabaseDictionary(config: DictionaryConfig): Promise<DictionaryConfig> {
+  const res = await fetch(`${API_BASE}/database/dictionary`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Failed to save dictionary" }));
+    throw new Error(err.detail || "Failed to save dictionary");
+  }
+  return res.json();
+}
+
 export async function generateAndRunQuery({
   prompt,
   dbUrl = "",
@@ -61,7 +81,9 @@ export async function generateAndRunQuery({
   provider = "gemini",
   modelName = "",
   previousSql,
-  previousPrompt
+  previousPrompt,
+  glossaryTerms,
+  fewShotExamples
 }: GenerateQueryParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/generate-and-run`, {
     method: "POST",
@@ -73,7 +95,9 @@ export async function generateAndRunQuery({
       provider: provider || "gemini",
       model_name: modelName || null,
       previous_sql: previousSql || null,
-      previous_prompt: previousPrompt || null
+      previous_prompt: previousPrompt || null,
+      glossary_terms: glossaryTerms || null,
+      few_shot_examples: fewShotExamples || null
     })
   });
   if (!res.ok) {
@@ -82,6 +106,7 @@ export async function generateAndRunQuery({
   }
   return res.json();
 }
+
 
 export async function executeDirectSql({ sql, dbUrl = "" }: ExecuteSqlParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/execute-sql`, {

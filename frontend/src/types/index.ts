@@ -78,6 +78,27 @@ export interface QueryResult {
 }
 
 
+// ─── Semantic Dictionary & Few-Shot Types ────────────────────────────
+
+export interface GlossaryTerm {
+  id?: string;
+  term: string;
+  definition: string;
+  category?: string;
+}
+
+export interface FewShotExample {
+  id?: string;
+  prompt: string;
+  sql: string;
+  explanation?: string;
+}
+
+export interface DictionaryConfig {
+  terms: GlossaryTerm[];
+  few_shots: FewShotExample[];
+}
+
 // ─── API Request / Response Types ────────────────────────────────────
 
 export interface GenerateQueryParams {
@@ -88,7 +109,10 @@ export interface GenerateQueryParams {
   modelName?: string;
   previousSql?: string;
   previousPrompt?: string;
+  glossaryTerms?: GlossaryTerm[];
+  fewShotExamples?: FewShotExample[];
 }
+
 
 export interface ExecuteSqlParams {
   sql: string;

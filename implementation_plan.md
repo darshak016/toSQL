@@ -9,31 +9,26 @@ Below is the breakdown of potential improvements categorized by impact and archi
 ## 1. Analysis of Areas for Improvement
 
 ### A. AI Engine & NL-to-SQL Accuracy (Highest Impact)
-1. **Multi-Turn Conversational Follow-ups (Chat History)**:
-   - *Current*: Each query is completely stateless. Asking *"Now filter that to only USA"* fails because the prompt builder only knows the single isolated question.
-   - *Improvement*: Support conversational context where previous questions, generated SQL, and schema context are maintained in a chat thread.
+1. **Multi-Turn Conversational Follow-ups (Chat History)** ✅ *(Completed)*:
+   - *Implemented*: Context passing (`previous_sql`, `previous_prompt`), LLM prompt augmentation, follow-up badge, quick refinement chips, and "New Thread" reset button.
 2. **Schema Pruning & Token Optimization for Large Databases**:
    - *Current*: `DatabaseIntrospector` feeds all tables, column names, foreign keys, and distinct values directly into the LLM prompt. On enterprise databases with 50+ tables, this risks token overflow, slower latency, and hallucinated joins.
    - *Improvement*: Add vector/embedding-based or lexical schema pruning to select only the top relevant tables/columns for the prompt.
-3. **Query Explanation & SQL Breakdown**:
-   - *Current*: The model returns a single text paragraph explanation.
-   - *Improvement*: Structured breakdown showing *Selected Tables*, *Join Conditions Used*, *Applied Filters*, and *Potential Caveats/Assumptions*.
-4. **Few-Shot Examples / Custom Semantic Dictionaries**:
-   - *Improvement*: Allow users or admins to register domain-specific glossary terms (e.g. `"active customer" means status = 'ACTIVE' AND last_order_date > NOW() - 90 days`) and custom few-shot example queries per database.
+3. **Query Explanation & SQL Breakdown** ✅ *(Completed)*:
+   - *Implemented*: `QueryBreakdown` model in `schemas.py` (`tables_used`, `joins`, `filters`, `aggregations`, `assumptions`), AST fallback parser, and themed tag badges in `ExplanationCard.tsx`.
+4. **Few-Shot Examples / Custom Semantic Dictionaries** ✅ *(Completed)*:
+   - *Implemented*: Defined `GlossaryTerm`, `FewShotExample`, and `DictionaryConfig` models; augmented `build_sql_generation_prompt` with structured glossary rules and few-shot pairs; added `GET/POST /api/database/dictionary` endpoints with sample preset defaults; created `DictionaryModal.tsx` dual-tab management UI with instant local persistence and "Use Prompt" testing button; verified with pytest suite (`test_semantic_dictionary.py`) and TypeScript builds.
 
 ---
 
 ### B. Execution, Data & Security Enhancements
-1. **Interactive Query History & Bookmarking / Favorites**:
-   - *Current*: `query_history` is an ephemeral in-memory Python array that clears whenever the backend restarts, and isn't persistable or bookmarkable in the UI.
-   - *Improvement*: Persistent query history (SQLite or LocalStorage), with the ability to tag, name, star/favorite queries, and re-run them with one click.
+1. **Interactive Query History & Bookmarking / Favorites** ✅ *(Completed)*:
+   - *Implemented*: Persistent localStorage history tracking across sessions, favorite bookmarking (starring), search filtering, one-click query restoration, and modal drawer UI (`HistoryModal.tsx`).
 2. **SQL Execution Plan (`EXPLAIN / EXPLAIN QUERY PLAN`)** ✅ *(Completed)*:
    - *Implemented*: `QueryRunner.explain_query(...)` and `validate_query_for_explain` with AST guardrail protections; added API endpoint `POST /query/explain-sql`.
    - *UI*: Added "Explain Plan" inspection button to `SqlViewer.tsx` opening an interactive `ExplainPlanModal.tsx` modal with visual execution node breakdown, table scan vs index lookup detection, raw output copy, and timing metrics.
-
-3. **Exporting Capabilities**:
-   - *Current*: Basic CSV download.
-   - *Improvement*: Add **Excel (.xlsx)** and **JSON** exports, as well as "Copy as Markdown Table" or "Copy as Insert Statements".
+3. **Exporting Capabilities** ✅ *(Completed)*:
+   - *Implemented*: Added CSV download with timestamping, formatted JSON export (`exportJSON`), and "Copy as Markdown Table" (`copyMarkdown`) directly in `ResultsTable.tsx`.
 4. **Dynamic Pagination & Large Result Set Streaming**:
    - *Current*: Limit hard-capped to 200 rows by AST guardrail.
    - *Improvement*: Configurable row limits with backend pagination (`LIMIT / OFFSET` or cursor) and table virtual scrolling for smooth rendering of 1,000+ rows.
@@ -44,20 +39,18 @@ Below is the breakdown of potential improvements categorized by impact and archi
 1. **Rich Interactive Charts (Chart.js / Recharts / ECharts)**:
    - *Current*: `Visualizer.tsx` uses custom SVG/HTML div bars and donuts with limited interactions (no tooltips, no zoom, limited axis formatting).
    - *Improvement*: Replace or enhance with a robust visual library (like Recharts or Lucide-backed Chart components) supporting hover tooltips, multiple series, area charts, line charts, and auto-aggregation.
-2. **SQL Syntax Highlighting & Code Editor**:
-   - *Current*: Simple `<textarea>` or monospace `<div>` in `SqlViewer.tsx`.
-   - *Improvement*: Integrate a lightweight Monaco or CodeMirror SQL editor with keyword highlighting, indentation, and formatting (`sql-formatter`).
-3. **Schema Diagram / ERD Visualizer**:
-   - *Current*: Schema sidebar is an accordion list.
-   - *Improvement*: Add an ERD (Entity Relationship Diagram) modal or tab showing tables, foreign key connections, and cardinality visually.
+2. **SQL Syntax Highlighting & Code Editor** ✅ *(Completed)*:
+   - *Implemented*: Syntax token highlighting with line numbering, inline editing textarea with Reset & Run actions, and one-click "Format SQL" with keyword casing and indentation (`SqlViewer.tsx`).
+3. **Schema Diagram / ERD Visualizer** ✅ *(Completed)*:
+   - *Implemented*: Interactive `ErdModal.tsx` displaying Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations with interactive search and chip navigation.
 4. **Theme Toggle (Cohere Warm Canvas vs. Dark Mode)**:
    - *Current*: Design is tuned around light/warm stone Cohere aesthetic. Adding an instant Dark Mode toggle improves accessibility for developers.
 
 ---
 
 ### D. Codebase Health, Testing & Production Readiness
-1. **Backend Integration & Unit Tests**:
-   - Add automated test cases for self-healing loops, multi-table joins, invalid dialects, and edge-case AST injection queries.
+1. **Backend Integration & Unit Tests** ✅ *(Completed)*:
+   - *Implemented*: Pytest test suite covering AST security guardrails, self-healing fallbacks, schema introspection, explain query plans, and edge-case prompt handling (`test_explain_plan.py`, `test_security.py`, `test_introspector.py`, `test_llm_pipeline.py`, `test_user_prompts.py`).
 2. **Connection Pooling & Multi-User Isolation**:
    - *Current*: Global `current_db` dictionary in `routes_database.py`. If two users connect to different databases simultaneously, they overwrite each other's session.
    - *Improvement*: Session-aware connection management (e.g. Session ID or Header-based workspace isolation).
@@ -66,16 +59,16 @@ Below is the breakdown of potential improvements categorized by impact and archi
 
 ## 2. Proposed Prioritized Implementation Roadmap
 
-### Phase 1: High-Value Usability & Productivity (Immediate Focus)
-- **1.1 Persistent Query History & Favorites**:
-  - Store history across sessions (via LocalStorage in frontend and/or persistent backend storage).
-  - Add a "History & Saved Queries" drawer/modal to re-run or inspect prior queries.
-- **1.2 SQL Formatter & Enhanced Editor**:
-  - Add format SQL button (auto-indent / format clean uppercase keywords).
-  - Copy to clipboard with toast notification.
-- **1.3 Advanced Export Options**:
+### Phase 1: High-Value Usability & Productivity ✅ *(Completed)*
+- **1.1 Persistent Query History & Favorites** ✅ *(Completed)*:
+  - Stored history across sessions via LocalStorage in frontend.
+  - Added "History & Saved Queries" modal to re-run, filter, star, or inspect prior queries (`HistoryModal.tsx`).
+- **1.2 SQL Formatter & Enhanced Editor** ✅ *(Completed)*:
+  - Added format SQL button with auto-indent & uppercase keywords (`sqlFormatter.ts`).
+  - Copy to clipboard with toast notification and editable SQL runner.
+- **1.3 Advanced Export Options** ✅ *(Completed)*:
   - Export to JSON and CSV with custom filename timestamping.
-  - One-click copy table to Markdown.
+  - One-click copy table to Markdown table format.
 
 ### Phase 2: AI Intelligence & Conversational Flow
 - **2.1 Conversational / Follow-up Prompting** ✅ *(Completed)*:
@@ -87,6 +80,12 @@ Below is the breakdown of potential improvements categorized by impact and archi
   - Added prompt instructions and fallback AST extractor in `self_healer.py`.
   - Rendered structured tag grid in `ExplanationCard.tsx` with themed badges for referenced tables, join conditions, applied filters, and aggregations.
   - Added test verification in `test_llm_pipeline.py`.
+- **2.3 Few-Shot Examples & Custom Semantic Dictionaries** ✅ *(Completed)*:
+   - Added `GlossaryTerm`, `FewShotExample`, and `DictionaryConfig` schema definitions and integrated with query generation requests.
+   - Enhanced `prompt_builder.py` with dynamic glossary business logic rules and few-shot query reference injection.
+   - Added backend REST endpoints `GET /api/database/dictionary` and `POST /api/database/dictionary`.
+   - Implemented `DictionaryModal.tsx` dual-tab management UI, synced with localStorage and backend, with a badge counter in `Navbar.tsx` and 1-click test button.
+   - Added comprehensive pytest suite in `backend/tests/test_semantic_dictionary.py`.
 
 ### Phase 3: Visual Analytics & Schema Exploration
 - **3.1 Enhanced Interactive Visualizer**:
@@ -95,6 +94,7 @@ Below is the breakdown of potential improvements categorized by impact and archi
   - Created `ErdModal.tsx` displaying interactive Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations.
   - Added filterable search and interactive foreign-key chip navigation.
   - Linked "Schema ERD" actions directly into `Navbar.tsx` and `SchemaSidebar.tsx`.
+
 
 ---
 

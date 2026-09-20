@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { 
   DbInfo, 
   AiSettings, 
+
   QueryResult, 
   PreviewData, 
   SampleQuery, 
   HistoryItem,
-  ExplainPlanResponse 
+  ExplainPlanResponse,
+  GlossaryTerm,
+  FewShotExample
 } from './types';
 import Navbar from './components/Navbar';
 import SchemaSidebar from './components/SchemaSidebar';
@@ -22,6 +25,7 @@ import TablePreviewModal from './components/TablePreviewModal';
 import HistoryModal from './components/HistoryModal';
 import ErdModal from './components/ErdModal';
 import ExplainPlanModal from './components/ExplainPlanModal';
+import DictionaryModal from './components/DictionaryModal';
 import { 
   fetchSchema, 
   connectDatabase, 
@@ -29,8 +33,11 @@ import {
   fetchTablePreview, 
   generateAndRunQuery, 
   executeDirectSql,
-  fetchExplainPlan
+  fetchExplainPlan,
+  fetchDatabaseDictionary,
+  saveDatabaseDictionary
 } from './services/api';
+
 
 import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
@@ -82,9 +89,80 @@ export default function App() {
   const [isExplainOpen, setIsExplainOpen] = useState(false);
   const [explainPlan, setExplainPlan] = useState<ExplainPlanResponse | null>(null);
   const [isExplainingPlan, setIsExplainingPlan] = useState(false);
+  const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
   const [previewTable, setPreviewTable] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
+  // Semantic Glossary Terms & Few-Shot Examples (Plan 1.4 / A.4)
+  const [glossaryTerms, setGlossaryTerms] = useState<GlossaryTerm[]>(() => {
+    try {
+      const saved = localStorage.getItem('tosql_glossary_terms_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [
+      {
+        id: 'term_default_1',
+        term: 'active customer',
+        definition: "c.id IN (SELECT DISTINCT customer_id FROM orders WHERE order_date >= date('now', '-90 days'))",
+        category: 'Customer Status'
+      },
+      {
+        id: 'term_default_2',
+        term: 'high value order',
+        definition: "o.total_amount >= 150.00 AND o.status = 'completed'",
+        category: 'Revenue'
+      },
+      {
+        id: 'term_default_3',
+        term: 'low stock',
+        definition: "p.stock_quantity < 50",
+        category: 'Inventory'
+      }
+    ];
+  });
+
+  const [fewShots, setFewShots] = useState<FewShotExample[]>(() => {
+    try {
+      const saved = localStorage.getItem('tosql_few_shots_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [
+      {
+        id: 'fs_default_1',
+        prompt: 'Show top 5 customers by spend',
+        sql: "SELECT c.name, ROUND(SUM(o.total_amount), 2) AS total_spent FROM customers c JOIN orders o ON c.id = o.customer_id WHERE o.status = 'completed' GROUP BY c.id, c.name ORDER BY total_spent DESC LIMIT 5",
+        explanation: 'Calculates completed order spending per customer and orders descending with a limit of 5.'
+      },
+      {
+        id: 'fs_default_2',
+        prompt: 'Monthly sales trend',
+        sql: "SELECT strftime('%Y-%m', order_date) AS month, ROUND(SUM(total_amount), 2) AS monthly_revenue, COUNT(id) AS order_count FROM orders WHERE status = 'completed' GROUP BY strftime('%Y-%m', order_date) ORDER BY month ASC",
+        explanation: 'Aggregates revenue and volume per month for completed orders formatted YYYY-MM.'
+      }
+    ];
+  });
+
+  const saveGlossaryTerms = (termsList: GlossaryTerm[]) => {
+    setGlossaryTerms(termsList);
+    try {
+      localStorage.setItem('tosql_glossary_terms_v1', JSON.stringify(termsList));
+      saveDatabaseDictionary({ terms: termsList, few_shots: fewShots }).catch(() => {});
+    } catch (e) {
+      console.error('Failed to save glossary terms', e);
+    }
+  };
+
+  const saveFewShotsList = (fewShotsList: FewShotExample[]) => {
+    setFewShots(fewShotsList);
+    try {
+      localStorage.setItem('tosql_few_shots_v1', JSON.stringify(fewShotsList));
+      saveDatabaseDictionary({ terms: glossaryTerms, few_shots: fewShotsList }).catch(() => {});
+    } catch (e) {
+      console.error('Failed to save few shots', e);
+    }
+  };
+
 
 
   // AI Settings
@@ -224,8 +302,11 @@ export default function App() {
         provider: aiSettings.provider,
         modelName: aiSettings.modelName,
         previousSql: queryResult?.sql || undefined,
-        previousPrompt: queryResult?.prompt || undefined
+        previousPrompt: queryResult?.prompt || undefined,
+        glossaryTerms: glossaryTerms.length > 0 ? glossaryTerms : undefined,
+        fewShotExamples: fewShots.length > 0 ? fewShots : undefined
       });
+
 
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
       setPipelineStep(4); // Final step: Output & Visualization
@@ -341,11 +422,14 @@ export default function App() {
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenHistory={() => setIsHistoryOpen(true)}
         historyCount={history.length}
+        onOpenDictionary={() => setIsDictionaryOpen(true)}
+        dictionaryCount={glossaryTerms.length + fewShots.length}
         onRefreshSchema={loadSchema}
         isRefreshing={isRefreshing}
         apiKeyConfigured={Boolean(aiSettings.apiKey)}
         onOpenErd={() => setIsErdOpen(true)}
       />
+
 
       {/* Main Workspace */}
       <div style={{
@@ -701,7 +785,19 @@ export default function App() {
         isLoading={isExplainingPlan}
         sql={queryResult?.sql || ''}
       />
+
+      {/* Semantic Dictionary & Few-Shot Dialog (Plan 1.4 / A.4) */}
+      <DictionaryModal
+        isOpen={isDictionaryOpen}
+        onClose={() => setIsDictionaryOpen(false)}
+        terms={glossaryTerms}
+        fewShots={fewShots}
+        onSaveTerms={saveGlossaryTerms}
+        onSaveFewShots={saveFewShotsList}
+        onTestPrompt={(selectedPrompt) => setPrompt(selectedPrompt)}
+      />
     </div>
   );
 }
+
 
