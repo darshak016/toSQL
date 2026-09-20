@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ExplainPlanResponse } from '../types';
 import { 
   Activity, 
@@ -31,6 +31,15 @@ export default function ExplainPlanModal({
   const [activeTab, setActiveTab] = useState<'visual' | 'raw' | 'sql'>('visual');
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleCopyRaw = () => {
@@ -42,6 +51,7 @@ export default function ExplainPlanModal({
 
   return (
     <div 
+      role="presentation"
       style={{
         position: 'fixed',
         inset: 0,
@@ -58,10 +68,13 @@ export default function ExplainPlanModal({
       }}
     >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="explain-plan-modal-title"
         style={{
           width: '100%',
-          maxWidth: '56rem',
-          maxHeight: '90vh',
+          maxWidth: '54rem',
+          maxHeight: '88vh',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: 'var(--bg-card)',
@@ -101,6 +114,7 @@ export default function ExplainPlanModal({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h3 
+                  id="explain-plan-modal-title"
                   style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.05rem',
@@ -155,6 +169,7 @@ export default function ExplainPlanModal({
               backgroundColor: 'transparent'
             }}
             title="Close"
+            aria-label="Close Explain Plan modal"
           >
             <XClose style={{ width: '1.1rem', height: '1.1rem', color: 'var(--cohere-slate)' }} />
           </button>
@@ -258,6 +273,8 @@ export default function ExplainPlanModal({
 
               {/* Tab Selector */}
               <div 
+                role="tablist"
+                aria-label="Explain plan view modes"
                 style={{
                   display: 'flex',
                   gap: '2px',
@@ -270,6 +287,8 @@ export default function ExplainPlanModal({
                 {(['visual', 'raw', 'sql'] as const).map((tab) => (
                   <button
                     key={tab}
+                    role="tab"
+                    aria-selected={activeTab === tab}
                     onClick={() => setActiveTab(tab)}
                     style={{
                       padding: '3px 10px',

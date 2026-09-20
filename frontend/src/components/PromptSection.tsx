@@ -142,6 +142,7 @@ export default function PromptSection({
             <button
               onClick={onClearContext}
               title="Start fresh new query"
+              aria-label="Start fresh new query"
               style={{
                 background: 'none',
                 border: 'none',
@@ -272,6 +273,8 @@ export default function PromptSection({
         }}
       >
         <textarea
+          id="sql-prompt-input"
+          aria-label="Natural language SQL query input"
           placeholder="Ask anything about your database (e.g. 'Show top 5 customers by total completed revenue with their email and order count')..."
           value={prompt}
           onChange={e => setPrompt(e.target.value)}

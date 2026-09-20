@@ -115,6 +115,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
           <input
             type="text"
             placeholder="Search schema..."
+            aria-label="Search schema tables and columns"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
@@ -165,7 +166,16 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
               >
                 {/* Table Header Row */}
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
                   onClick={() => toggleTable(tbl.name)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleTable(tbl.name);
+                    }
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -218,6 +228,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
                         onPreviewTable(tbl.name);
                       }}
                       title="Quick preview table sample"
+                      aria-label={`Preview sample data for ${tbl.name}`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',

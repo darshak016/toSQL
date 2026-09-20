@@ -261,6 +261,8 @@ export default function SqlViewer({
       <div style={{ padding: '1.25rem', backgroundColor: 'var(--cohere-canvas)' }}>
         {isEditing ? (
           <textarea
+            id="editable-sql-input"
+            aria-label="Editable SQL statement"
             value={editableSql}
             onChange={e => setEditableSql(e.target.value)}
             rows={Math.max(4, editableSql.split('\n').length + 1)}

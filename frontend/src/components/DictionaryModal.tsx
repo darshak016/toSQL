@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { GlossaryTerm, FewShotExample } from '../types';
 import { 
   Bookmark, 
-  XClose, 
+  BookOpen, 
   Plus, 
   Trash01, 
-  Code01, 
   Check, 
-  FileCode,
+  SearchLg, 
+  XClose, 
   Terminal,
-  SearchLg,
-  BookOpen
 } from './Icons';
 
 interface DictionaryModalProps {
@@ -46,6 +44,15 @@ export default function DictionaryModal({
   const [newSql, setNewSql] = useState('');
   const [newExplanation, setNewExplanation] = useState('');
   const [fewShotSuccessToast, setFewShotSuccessToast] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -107,6 +114,7 @@ export default function DictionaryModal({
 
   return (
     <div 
+      role="presentation"
       style={{
         position: 'fixed',
         inset: 0,
@@ -123,6 +131,9 @@ export default function DictionaryModal({
       }}
     >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dictionary-modal-title"
         style={{
           width: '100%',
           maxWidth: '58rem',
@@ -166,6 +177,7 @@ export default function DictionaryModal({
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h3 
+                  id="dictionary-modal-title"
                   style={{
                     fontFamily: 'var(--font-display)',
                     fontSize: '1.05rem',
@@ -205,6 +217,7 @@ export default function DictionaryModal({
 
           <button
             onClick={onClose}
+            aria-label="Close dictionary modal"
             className="btn-cohere-pill-outline"
             style={{ 
               padding: '6px', 
@@ -236,6 +249,8 @@ export default function DictionaryModal({
         >
           {/* Tabs */}
           <div 
+            role="tablist"
+            aria-label="Dictionary sections"
             style={{
               display: 'flex',
               gap: '4px',
@@ -246,6 +261,8 @@ export default function DictionaryModal({
             }}
           >
             <button
+              role="tab"
+              aria-selected={activeTab === 'glossary'}
               onClick={() => setActiveTab('glossary')}
               style={{
                 display: 'flex',
@@ -267,6 +284,8 @@ export default function DictionaryModal({
               <span>Glossary Terms ({terms.length})</span>
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'fewshots'}
               onClick={() => setActiveTab('fewshots')}
               style={{
                 display: 'flex',
@@ -303,6 +322,7 @@ export default function DictionaryModal({
             }} />
             <input
               type="text"
+              aria-label={activeTab === 'glossary' ? 'Filter glossary terms' : 'Filter few-shot examples'}
               placeholder={activeTab === 'glossary' ? 'Filter glossary terms...' : 'Filter few-shot examples...'}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}

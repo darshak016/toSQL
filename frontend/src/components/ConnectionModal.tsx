@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Database01, Check, XClose } from './Icons';
 
 interface ConnectionModalProps {
@@ -21,6 +21,15 @@ export default function ConnectionModal({
     currentDbUrl && !currentDbUrl.includes('ecommerce.db') ? currentDbUrl : ''
   );
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,8 +44,11 @@ export default function ConnectionModal({
   };
 
   return (
-    <div className="untitledui-modal-backdrop" onClick={onClose}>
+    <div className="untitledui-modal-backdrop" onClick={onClose} role="presentation">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="connection-modal-title"
         onClick={e => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--bg-card)',
@@ -71,7 +83,7 @@ export default function ConnectionModal({
               <Database01 style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <h3 style={{
+              <h3 id="connection-modal-title" style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: '1rem',
                 fontWeight: 600,
@@ -111,7 +123,10 @@ export default function ConnectionModal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
             {/* Supabase option */}
             <div
+              role="button"
+              tabIndex={0}
               onClick={() => setSelectedType('supabase')}
+              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedType('supabase'); } }}
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -125,14 +140,17 @@ export default function ConnectionModal({
             >
               <input
                 type="radio"
+                name="dbType"
+                id="radio-supabase"
+                aria-label="Supabase / PostgreSQL database"
                 checked={selectedType === 'supabase'}
                 onChange={() => setSelectedType('supabase')}
                 style={{ marginTop: '0.2rem', accentColor: 'var(--cohere-primary)' }}
               />
               <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)' }}>
+                <label htmlFor="radio-supabase" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)', cursor: 'pointer' }}>
                   Supabase / PostgreSQL
-                </div>
+                </label>
                 <div style={{ fontSize: '0.75rem', color: 'var(--cohere-muted)' }}>
                   Production database with real schemas and SSL pooling
                 </div>
@@ -141,7 +159,10 @@ export default function ConnectionModal({
 
             {/* Sample SQLite option */}
             <div
+              role="button"
+              tabIndex={0}
               onClick={() => setSelectedType('sample')}
+              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedType('sample'); } }}
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -155,16 +176,19 @@ export default function ConnectionModal({
             >
               <input
                 type="radio"
+                name="dbType"
+                id="radio-sqlite"
+                aria-label="Local E-Commerce Demo SQLite database"
                 checked={selectedType === 'sample'}
                 onChange={() => setSelectedType('sample')}
                 style={{ marginTop: '0.2rem', accentColor: 'var(--cohere-primary)' }}
               />
               <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)' }}>
+                <label htmlFor="radio-sqlite" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)', cursor: 'pointer' }}>
                   Local E-Commerce Demo (SQLite)
-                </div>
+                </label>
                 <div style={{ fontSize: '0.75rem', color: 'var(--cohere-muted)' }}>
-                  Pre-populated customers, orders, products, and categories
+                  Pre-seeded catalog, customers, orders, and order_items
                 </div>
               </div>
             </div>
@@ -173,7 +197,7 @@ export default function ConnectionModal({
           {/* Connection URI Input (if Supabase selected) */}
           {selectedType === 'supabase' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <label style={{
+              <label htmlFor="supabase-uri-input" style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.7rem',
                 fontWeight: 600,
@@ -183,7 +207,9 @@ export default function ConnectionModal({
                 PostgreSQL Connection URI
               </label>
               <input
+                id="supabase-uri-input"
                 type="password"
+                aria-label="PostgreSQL Connection URI"
                 placeholder="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres"
                 value={customUrl}
                 onChange={e => setCustomUrl(e.target.value)}

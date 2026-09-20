@@ -155,6 +155,7 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
           <input
             type="text"
             placeholder="Search rows..."
+            aria-label="Search result rows"
             value={filterText}
             onChange={e => { setFilterText(e.target.value); setPage(0); }}
             style={{

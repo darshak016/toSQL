@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { HistoryItem } from '../types';
 import { 
   Clock, 
@@ -35,6 +35,15 @@ export default function HistoryModal({
   const [activeTab, setActiveTab] = useState<'all' | 'favorites'>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleCopySql = (e: React.MouseEvent, sql: string, id: string) => {
@@ -57,18 +66,25 @@ export default function HistoryModal({
   const favoritesCount = history.filter(h => h.isFavorite).length;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 50,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(23, 23, 28, 0.45)',
-      backdropFilter: 'blur(4px)',
-      padding: '1.25rem',
-    }}>
+    <div 
+      role="presentation"
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(23, 23, 28, 0.45)',
+        backdropFilter: 'blur(4px)',
+        padding: '1.25rem',
+      }}
+    >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="history-modal-title"
         style={{
           width: '100%',
           maxWidth: '52rem',
@@ -106,14 +122,14 @@ export default function HistoryModal({
               <Clock style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <h3 style={{
+              <h3 id="history-modal-title" style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: '1.1rem',
                 fontWeight: 600,
                 color: 'var(--cohere-ink)',
                 lineHeight: 1.2,
               }}>
-                Query History & Saved Favorites
+                Query History &amp; Saved Favorites
               </h3>
               <p style={{
                 fontFamily: 'var(--font-body)',
@@ -165,7 +181,7 @@ export default function HistoryModal({
           backgroundColor: 'var(--bg-card)',
         }}>
           {/* Tab Filter */}
-          <div style={{
+          <div role="tablist" aria-label="Query history categories" style={{
             display: 'flex',
             gap: '4px',
             padding: '3px',
@@ -174,6 +190,8 @@ export default function HistoryModal({
             border: '1px solid var(--cohere-hairline)',
           }}>
             <button
+              role="tab"
+              aria-selected={activeTab === 'all'}
               onClick={() => setActiveTab('all')}
               style={{
                 display: 'flex',
@@ -196,6 +214,8 @@ export default function HistoryModal({
             </button>
 
             <button
+              role="tab"
+              aria-selected={activeTab === 'favorites'}
               onClick={() => setActiveTab('favorites')}
               style={{
                 display: 'flex',
@@ -232,6 +252,7 @@ export default function HistoryModal({
             }} />
             <input
               type="text"
+              aria-label="Filter query history or SQL"
               placeholder="Filter history or SQL..."
               value={filterText}
               onChange={e => setFilterText(e.target.value)}
@@ -248,7 +269,10 @@ export default function HistoryModal({
                 fontSize: '0.78rem',
                 outline: 'none',
                 fontFamily: 'var(--font-body)',
+                transition: 'border-color 0.15s ease',
               }}
+              onFocus={e => e.target.style.borderColor = 'var(--cohere-primary)'}
+              onBlur={e => e.target.style.borderColor = 'var(--cohere-hairline)'}
             />
           </div>
         </div>
@@ -309,12 +333,14 @@ export default function HistoryModal({
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', flex: 1 }}>
                     <button
                       onClick={() => onToggleFavorite(item.id)}
+                      aria-label={item.isFavorite ? 'Remove query from favorites' : 'Bookmark query as favorite'}
+                      aria-pressed={item.isFavorite}
                       style={{
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer',
                         padding: '2px',
-                        color: item.isFavorite ? 'var(--cohere-amber)' : '#9ca3af',
+                        color: item.isFavorite ? 'var(--cohere-amber)' : 'var(--cohere-muted)',
                         marginTop: '2px',
                       }}
                       title={item.isFavorite ? 'Remove from favorites' : 'Mark as favorite'}
@@ -346,7 +372,7 @@ export default function HistoryModal({
                         {item.rowCount !== undefined && (
                           <>
                             <span>•</span>
-                            <span>{item.rowCount} {item.rowCount === 1 ? 'row' : 'rows'}</span>
+                            <span>{item.rowCount} rows</span>
                           </>
                         )}
                         {item.executionTimeMs !== undefined && (
@@ -368,6 +394,7 @@ export default function HistoryModal({
                       className="btn-cohere-primary"
                       style={{ padding: '4px 10px', fontSize: '11px' }}
                       title="Load prompt into prompt box"
+                      aria-label={`Load query: ${item.prompt}`}
                     >
                       <Play style={{ width: '0.75rem', height: '0.75rem' }} />
                       <span>Run</span>
@@ -377,6 +404,7 @@ export default function HistoryModal({
                       className="btn-cohere-pill-outline"
                       style={{ padding: '4px 8px', fontSize: '11px', color: 'var(--cohere-muted)' }}
                       title="Delete from history"
+                      aria-label={`Delete query from history: ${item.prompt}`}
                     >
                       <Trash01 style={{ width: '0.75rem', height: '0.75rem' }} />
                     </button>

@@ -319,3 +319,27 @@ html, body {
   background-color: rgba(23, 23, 28, 0.4);
   backdrop-filter: blur(4px);
 }
+
+/* ── Accessibility & Focus Rings (WCAG 2.4.7 Focus Visible) ── */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--cohere-action-blue) !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader only helper */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

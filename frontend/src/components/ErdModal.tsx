@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { TableInfo } from '../types';
 import { Share04, XClose, Database01, Key01, Eye, SearchLg } from './Icons';
 
@@ -19,6 +19,15 @@ export default function ErdModal({
 }: ErdModalProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [filterText, setFilterText] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -49,8 +58,11 @@ export default function ErdModal({
   );
 
   return (
-    <div className="untitledui-modal-backdrop" onClick={onClose}>
+    <div className="untitledui-modal-backdrop" onClick={onClose} role="presentation">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="erd-modal-title"
         onClick={e => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--bg-card)',
@@ -90,7 +102,7 @@ export default function ErdModal({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                <h3 style={{
+                <h3 id="erd-modal-title" style={{
                   fontFamily: 'var(--font-display)',
                   fontSize: '1.1rem',
                   fontWeight: 600,
@@ -151,6 +163,7 @@ export default function ErdModal({
               }} />
               <input
                 type="text"
+                aria-label="Filter tables or columns in ERD"
                 value={filterText}
                 onChange={e => setFilterText(e.target.value)}
                 placeholder="Filter tables or columns..."
@@ -170,6 +183,7 @@ export default function ErdModal({
 
             <button
               onClick={onClose}
+              aria-label="Close ERD modal"
               className="btn-cohere-pill-outline"
               style={{ padding: '6px 8px', color: 'var(--cohere-muted)' }}
               title="Close"

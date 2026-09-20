@@ -25,6 +25,15 @@ export default function SettingsModal({
     setModelName(settings.modelName || (settings.provider === 'openai' ? 'gpt-4o-mini' : 'gemini-2.5-flash'));
   }, [settings, isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleProviderChange = (p: string) => {
@@ -39,8 +48,11 @@ export default function SettingsModal({
   };
 
   return (
-    <div className="untitledui-modal-backdrop" onClick={onClose}>
+    <div className="untitledui-modal-backdrop" onClick={onClose} role="presentation">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
         onClick={e => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--bg-card)',
@@ -75,7 +87,7 @@ export default function SettingsModal({
               <Key01 style={{ width: '1rem', height: '1rem' }} />
             </div>
             <div>
-              <h3 style={{
+              <h3 id="settings-modal-title" style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: '1rem',
                 fontWeight: 600,
@@ -112,8 +124,8 @@ export default function SettingsModal({
         {/* Modal Form Body */}
         <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.125rem' }}>
           {/* Provider Selection */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <label style={{
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <span id="provider-selection-label" style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.7rem',
               fontWeight: 600,
@@ -121,19 +133,21 @@ export default function SettingsModal({
               textTransform: 'uppercase',
             }}>
               LLM Provider
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            </span>
+            <div role="radiogroup" aria-labelledby="provider-selection-label" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
               {[
                 { id: 'gemini', label: 'Google Gemini' },
                 { id: 'openai', label: 'OpenAI GPT' },
               ].map(p => (
                 <button
-                  type="button"
                   key={p.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={provider === p.id}
                   onClick={() => handleProviderChange(p.id)}
                   style={{
-                    padding: '0.625rem',
-                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.625rem 0.75rem',
+                    borderRadius: 'var(--radius-xs)',
                     border: provider === p.id ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
                     backgroundColor: provider === p.id ? 'var(--cohere-soft-stone)' : 'var(--bg-card)',
                     fontFamily: 'var(--font-body)',
@@ -151,7 +165,7 @@ export default function SettingsModal({
 
           {/* Model Name Input */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <label style={{
+            <label htmlFor="model-identifier-input" style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.7rem',
               fontWeight: 600,
@@ -161,7 +175,9 @@ export default function SettingsModal({
               Model Identifier
             </label>
             <input
+              id="model-identifier-input"
               type="text"
+              aria-label="Model Identifier"
               value={modelName}
               onChange={e => setModelName(e.target.value)}
               style={{
@@ -182,7 +198,7 @@ export default function SettingsModal({
 
           {/* API Key Input */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <label style={{
+            <label htmlFor="api-secret-key-input" style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.7rem',
               fontWeight: 600,
@@ -192,7 +208,9 @@ export default function SettingsModal({
               API Secret Key
             </label>
             <input
+              id="api-secret-key-input"
               type="password"
+              aria-label="API Secret Key"
               placeholder={provider === 'gemini' ? 'AIzaSy...' : 'sk-...'}
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}

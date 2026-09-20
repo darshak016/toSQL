@@ -34,7 +34,6 @@ import {
   generateAndRunQuery, 
   executeDirectSql,
   fetchExplainPlan,
-  fetchDatabaseDictionary,
   saveDatabaseDictionary
 } from './services/api';
 
@@ -680,20 +679,26 @@ export default function App() {
                 backgroundColor: 'var(--cohere-soft-stone)',
               }}>
                 {/* Cohere Pill Tab Switcher */}
-                <div style={{
-                  display: 'flex',
-                  gap: '4px',
-                  padding: '3px',
-                  borderRadius: 'var(--radius-xl)',
-                  backgroundColor: 'var(--bg-card)',
-                  border: '1px solid var(--cohere-hairline)',
-                }}>
+                <div 
+                  role="tablist"
+                  aria-label="Query results views"
+                  style={{
+                    display: 'flex',
+                    gap: '4px',
+                    padding: '3px',
+                    borderRadius: 'var(--radius-xl)',
+                    backgroundColor: 'var(--bg-card)',
+                    border: '1px solid var(--cohere-hairline)',
+                  }}
+                >
                   {([
                     ['table', <Table key="t" style={{ width: '0.8rem', height: '0.8rem' }} />, `Data Grid (${queryResult.data.row_count})`],
                     ['chart', <BarChart03 key="b" style={{ width: '0.8rem', height: '0.8rem' }} />, 'Visualizer']
                   ] as [string, React.ReactNode, string][]).map(([id, icon, label]) => (
                     <button
                       key={id}
+                      role="tab"
+                      aria-selected={activeTab === id}
                       onClick={() => setActiveTab(id)}
                       style={{
                         display: 'flex',

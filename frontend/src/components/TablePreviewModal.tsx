@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { PreviewData } from '../types';
 import { Table, XClose, RefreshCw01 } from './Icons';
 
@@ -17,11 +17,23 @@ export default function TablePreviewModal({
   previewData, 
   isLoading 
 }: TablePreviewModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="untitledui-modal-backdrop" onClick={onClose}>
+    <div className="untitledui-modal-backdrop" onClick={onClose} role="presentation">
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="table-preview-modal-title"
         onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: 'var(--bg-card)',
@@ -57,7 +69,7 @@ export default function TablePreviewModal({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h3 style={{
+                <h3 id="table-preview-modal-title" style={{
                   fontFamily: 'var(--font-display)',
                   fontSize: '1rem',
                   fontWeight: 600,
