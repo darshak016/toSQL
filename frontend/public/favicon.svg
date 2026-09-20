@@ -1,17 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
-  <!-- Rounded Base Badge in Cohere Near-Black -->
-  <rect width="32" height="32" rx="7" fill="#17171C" />
-  
-  <!-- Subtle Gradient Accent Line on Top -->
-  <rect x="5" y="4" width="22" height="2" rx="1" fill="#FF7759" />
+  <style>
+    :root {
+      --fav-bg: #17171c;
+      --fav-text: #ffffff;
+      --fav-coral: #ff7759;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fav-bg: #f3f3f5;
+        --fav-text: #0c0d10;
+        --fav-coral: #ff8a70;
+      }
+    }
+  </style>
 
-  <!-- Monospaced 'to_' text in crisp white -->
+  <!-- Rounded Base Badge adapting to browser dark/light mode -->
+  <rect width="32" height="32" rx="7" fill="var(--fav-bg)" />
+  
+  <!-- Subtle Coral Accent Line on Top -->
+  <rect x="4" y="3.5" width="24" height="2.5" rx="1.25" fill="var(--fav-coral)" />
+
+  <!-- Monospaced 'to_' text matching header brand mark -->
   <text 
-    x="5" 
-    y="22" 
-    fill="#FFFFFF" 
-    font-family="-apple-system, BlinkMacSystemFont, 'Space Grotesk', 'JetBrains Mono', 'Segoe UI', sans-serif" 
-    font-size="14" 
+    x="4.5" 
+    y="23" 
+    fill="var(--fav-text)" 
+    font-family="-apple-system, BlinkMacSystemFont, 'Space Grotesk', 'JetBrains Mono', 'Segoe UI', monospace" 
+    font-size="14.5" 
     font-weight="700" 
     letter-spacing="-0.06em"
   >to_</text>

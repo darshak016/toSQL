@@ -42,8 +42,8 @@ Below is the breakdown of potential improvements categorized by impact and archi
    - *Implemented*: Syntax token highlighting with line numbering, inline editing textarea with Reset & Run actions, and one-click "Format SQL" with keyword casing and indentation (`SqlViewer.tsx`).
 3. **Schema Diagram / ERD Visualizer** ✅ *(Completed)*:
    - *Implemented*: Interactive `ErdModal.tsx` displaying Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations with interactive search and chip navigation.
-4. **Theme Toggle (Cohere Warm Canvas vs. Dark Mode)**:
-   - *Current*: Design is tuned around light/warm stone Cohere aesthetic. Adding an instant Dark Mode toggle improves accessibility for developers.
+4. **Theme Toggle (Cohere Warm Canvas vs. Dark Mode)** ✅ *(Completed)*:
+   - *Implemented*: Instant theme toggle button in `Navbar.tsx` (with `<Sun>` and `<Moon>` icons), localStorage persistence (`tosql_theme_preference_v1`), OS preference fallback (`prefers-color-scheme`), root `data-theme="dark"` attribute, and complete design-token harmonization across all 17 UI components.
 
 ---
 
@@ -99,6 +99,10 @@ Below is the breakdown of potential improvements categorized by impact and archi
   - Created `ErdModal.tsx` displaying interactive Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations.
   - Added filterable search and interactive foreign-key chip navigation.
   - Linked "Schema ERD" actions directly into `Navbar.tsx` and `SchemaSidebar.tsx`.
+- **3.3 Enterprise Dark Mode & Theme Toggle System** ✅ *(Completed)*:
+  - Full design tokens mapping in `index.css` (`[data-theme="dark"]`) following Cohere's 2026 design specifications.
+  - Seamless toggle button in `Navbar.tsx` (`Sun`/`Moon`), local storage persistence, and OS auto-detection in `App.tsx`.
+  - Comprehensive adaptation of all 17 UI components removing all hardcoded `#ffffff` backgrounds and illegible contrast states.
 
 
 ---

@@ -27,13 +27,26 @@
   --cohere-coral-soft:    #ffad9b;
   --cohere-form-focus:    #17171c;
   --cohere-error:         #d32f2f;
+  --cohere-error-bg:      #fef2f2;
+  --cohere-error-border:  #fecaca;
   --cohere-success:       #00875a;
+  --cohere-success-bg:    #edfce9;
+  --cohere-success-border:#a7f3d0;
+  --cohere-amber:         #d97706;
+  --cohere-amber-bg:      #fef3c7;
+  --cohere-amber-border:  #fde68a;
+  --cohere-amber-text:    #92400e;
+  --cohere-purple:        #7c3aed;
+  --cohere-purple-bg:     #f5f3ff;
+  --cohere-purple-border: #ddd6fe;
+  --cohere-purple-text:   #6d28d9;
 
   /* === Surfaces mapping === */
   --bg-base:              #ffffff;
   --bg-canvas:            #ffffff;
   --bg-stone:             #f5f4f0;
   --bg-card:              #ffffff;
+  --bg-input:             #ffffff;
 
   /* === Fonts === */
   --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -54,6 +67,59 @@
   --shadow-subtle: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
   --shadow-card: 0 4px 16px rgba(0,0,0,0.05);
   --shadow-modal: 0 20px 48px rgba(0,0,0,0.14);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* === Cohere Dark Theme Colors (Command Center) === */
+  --cohere-primary:       #f3f3f5; /* Off-white for primary buttons and high-contrast text */
+  --cohere-black:         #ffffff;
+  --cohere-ink:           #f0f0f4; /* High contrast body text */
+  --cohere-deep-green:    #00a884; /* Vibrant emerald */
+  --cohere-dark-navy:     #0c0d10;
+  --cohere-canvas:        #0c0d10; /* Deep Obsidian Midnight canvas */
+  --cohere-soft-stone:    #18191f; /* Mineral surface */
+  --cohere-stone-hover:   #23242c;
+  --cohere-pale-green:    #06231d;
+  --cohere-pale-blue:     #0f2347;
+  --cohere-hairline:      #262730; /* Hairline divider */
+  --cohere-border-light:  #22232b;
+  --cohere-card-border:   #1f2027;
+  --cohere-muted:         #8b8b9e;
+  --cohere-slate:         #a2a2b5;
+  --cohere-body-muted:    #a0a0b2;
+  --cohere-action-blue:   #3b82f6;
+  --cohere-focus-blue:    #60a5fa;
+  --cohere-coral:         #ff8a70;
+  --cohere-coral-soft:    #ffad9b;
+  --cohere-form-focus:    #ffffff;
+  --cohere-error:         #f87171;
+  --cohere-error-bg:      #2b1315;
+  --cohere-error-border:  #5c1d24;
+  --cohere-success:       #34d399;
+  --cohere-success-bg:    #06231d;
+  --cohere-success-border:#0d5945;
+  --cohere-amber:         #fbbf24;
+  --cohere-amber-bg:      #261904;
+  --cohere-amber-border:  #5c3d0a;
+  --cohere-amber-text:    #fde68a;
+  --cohere-purple:        #a78bfa;
+  --cohere-purple-bg:     #21153b;
+  --cohere-purple-border: #4c2889;
+  --cohere-purple-text:   #ddd6fe;
+
+  /* === Surfaces mapping === */
+  --bg-base:              #0c0d10;
+  --bg-canvas:            #0c0d10;
+  --bg-stone:             #18191f;
+  --bg-card:              #131419;
+  --bg-input:             #18191f;
+
+  /* === Elevation in Dark Mode === */
+  --shadow-subtle: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-modal: 0 24px 56px rgba(0,0,0,0.7);
 }
 
 /* ── Global Reset ── */
@@ -107,7 +173,7 @@ html, body {
   justify-content: center;
   gap: 0.5rem;
   background-color: var(--cohere-primary);
-  color: #ffffff;
+  color: var(--cohere-canvas);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
@@ -120,9 +186,9 @@ html, body {
 }
 
 .btn-cohere-primary:hover:not(:disabled) {
-  background-color: var(--cohere-black);
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 
 .btn-cohere-primary:disabled {
@@ -155,7 +221,7 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   color: var(--cohere-ink);
   font-family: var(--font-body);
   font-size: 12px;
@@ -173,16 +239,16 @@ html, body {
   background-color: var(--cohere-soft-stone);
 }
 
-/* ── Light Query Console Card ── */
+/* ── Query Console Card ── */
 .cohere-console-card {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   color: var(--cohere-ink);
   border-radius: var(--radius-md);
   border: 1px solid var(--cohere-hairline);
   box-shadow: var(--shadow-card);
 }
 
-/* ── Light Stone Card ── */
+/* ── Stone Card ── */
 .cohere-stone-card {
   background-color: var(--cohere-soft-stone);
   color: var(--cohere-ink);
@@ -201,7 +267,7 @@ html, body {
   font-weight: 500;
   border: 1px solid var(--cohere-coral);
   color: var(--cohere-coral);
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;

@@ -56,7 +56,7 @@ export default function PipelineVisualizer({
     <div style={{
       borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--cohere-hairline)',
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-card)',
       padding: '1.25rem 1.5rem',
       boxShadow: 'var(--shadow-subtle)',
       display: 'flex',
@@ -142,16 +142,16 @@ export default function PipelineVisualizer({
           let textColor = 'var(--cohere-muted)';
 
           if (isDone) {
-            bg = '#f0fdf4';
-            borderColor = '#bbf7d0';
+            bg = 'var(--cohere-pale-green)';
+            borderColor = 'rgba(0, 168, 132, 0.35)';
             textColor = 'var(--cohere-ink)';
           } else if (isCurrent) {
-            bg = '#fff7ed';
+            bg = 'rgba(255, 119, 89, 0.08)';
             borderColor = 'var(--cohere-coral)';
             textColor = 'var(--cohere-ink)';
           } else if (isFailed) {
-            bg = '#fef2f2';
-            borderColor = '#fecaca';
+            bg = 'rgba(211, 47, 47, 0.08)';
+            borderColor = 'var(--cohere-error)';
             textColor = 'var(--cohere-error)';
           }
 
@@ -190,8 +190,8 @@ export default function PipelineVisualizer({
                     width: '1rem',
                     height: '1rem',
                     borderRadius: '50%',
-                    backgroundColor: '#16a34a',
-                    color: '#ffffff',
+                    backgroundColor: 'var(--cohere-deep-green)',
+                    color: 'var(--cohere-canvas)',
                   }}>
                     <Check style={{ width: '0.65rem', height: '0.65rem', strokeWidth: 3 }} />
                   </div>
@@ -213,7 +213,7 @@ export default function PipelineVisualizer({
                     height: '1rem',
                     borderRadius: '50%',
                     backgroundColor: 'var(--cohere-error)',
-                    color: '#ffffff',
+                    color: 'var(--cohere-canvas)',
                   }}>
                     ✕
                   </div>
@@ -273,11 +273,11 @@ export default function PipelineVisualizer({
           gap: '0.625rem',
           padding: '0.5rem 0.875rem',
           borderRadius: 'var(--radius-xs)',
-          backgroundColor: '#fffbeb',
-          border: '1px solid #fed7aa',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          border: '1px solid rgba(245, 158, 11, 0.3)',
           fontFamily: 'var(--font-mono)',
           fontSize: '0.7rem',
-          color: '#92400e',
+          color: 'var(--cohere-coral)',
         }}>
           <span style={{ fontWeight: 700 }}>🔄 Self-Healing Active:</span>
           <span>

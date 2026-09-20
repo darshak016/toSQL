@@ -42,8 +42,34 @@ import {
 import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
 const STORAGE_KEY_HISTORY = 'tosql_query_history_v1';
+const STORAGE_KEY_THEME = 'tosql_theme_preference_v1';
 
 export default function App() {
+  // Theme State: 'light' | 'dark'
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_THEME);
+      if (saved === 'dark' || saved === 'light') return saved;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    } catch {}
+    return 'light';
+  });
+
+  useEffect(() => {
+    try {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(STORAGE_KEY_THEME, theme);
+    } catch (e) {
+      console.error('Failed to set theme attribute', e);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   // DB & Schema State
   const [dbInfo, setDbInfo] = useState<DbInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -428,6 +454,8 @@ export default function App() {
         isRefreshing={isRefreshing}
         apiKeyConfigured={Boolean(aiSettings.apiKey)}
         onOpenErd={() => setIsErdOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
 
@@ -456,7 +484,7 @@ export default function App() {
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: '1.5rem 2rem',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--cohere-canvas)',
           gap: '1.25rem',
         }}>
           {/* Editorial Error Alert Banner */}
@@ -635,7 +663,7 @@ export default function App() {
               overflow: 'hidden',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--cohere-hairline)',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-card)',
               boxShadow: 'var(--shadow-subtle)',
               marginBottom: '2rem',
               flexShrink: 0,
@@ -657,7 +685,7 @@ export default function App() {
                   gap: '4px',
                   padding: '3px',
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--cohere-hairline)',
                 }}>
                   {([
@@ -679,7 +707,7 @@ export default function App() {
                         fontSize: '12px',
                         fontWeight: 600,
                         backgroundColor: activeTab === id ? 'var(--cohere-primary)' : 'transparent',
-                        color: activeTab === id ? '#ffffff' : 'var(--cohere-muted)',
+                        color: activeTab === id ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -692,7 +720,7 @@ export default function App() {
                 <div style={{
                   padding: '2px 10px',
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--cohere-hairline)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.7rem',

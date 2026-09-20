@@ -73,7 +73,7 @@ export default function HistoryModal({
           width: '100%',
           maxWidth: '52rem',
           maxHeight: '85vh',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--cohere-hairline)',
           boxShadow: 'var(--shadow-modal)',
@@ -98,7 +98,7 @@ export default function HistoryModal({
               height: '2rem',
               borderRadius: 'var(--radius-xs)',
               backgroundColor: 'var(--cohere-primary)',
-              color: '#ffffff',
+              color: 'var(--cohere-canvas)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -134,7 +134,7 @@ export default function HistoryModal({
                   padding: '4px 10px',
                   fontSize: '11px',
                   color: 'var(--cohere-error)',
-                  borderColor: '#fecaca',
+                  borderColor: 'var(--cohere-error-border)',
                 }}
                 title="Clear all stored history"
               >
@@ -162,7 +162,7 @@ export default function HistoryModal({
           gap: '0.75rem',
           padding: '0.875rem 1.5rem',
           borderBottom: '1px solid var(--cohere-hairline)',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
         }}>
           {/* Tab Filter */}
           <div style={{
@@ -187,7 +187,7 @@ export default function HistoryModal({
                 fontSize: '12px',
                 fontWeight: 600,
                 backgroundColor: activeTab === 'all' ? 'var(--cohere-primary)' : 'transparent',
-                color: activeTab === 'all' ? '#ffffff' : 'var(--cohere-muted)',
+                color: activeTab === 'all' ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -208,8 +208,8 @@ export default function HistoryModal({
                 fontFamily: 'var(--font-body)',
                 fontSize: '12px',
                 fontWeight: 600,
-                backgroundColor: activeTab === 'favorites' ? '#d97706' : 'transparent',
-                color: activeTab === 'favorites' ? '#ffffff' : 'var(--cohere-muted)',
+                backgroundColor: activeTab === 'favorites' ? 'var(--cohere-amber)' : 'transparent',
+                color: activeTab === 'favorites' ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -243,7 +243,7 @@ export default function HistoryModal({
                 paddingBottom: '0.4rem',
                 borderRadius: 'var(--radius-xs)',
                 border: '1px solid var(--cohere-hairline)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-input)',
                 color: 'var(--cohere-ink)',
                 fontSize: '0.78rem',
                 outline: 'none',
@@ -290,7 +290,7 @@ export default function HistoryModal({
                 style={{
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--cohere-hairline)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
                   padding: '0.875rem 1rem',
                   display: 'flex',
                   flexDirection: 'column',
@@ -314,7 +314,7 @@ export default function HistoryModal({
                         border: 'none',
                         cursor: 'pointer',
                         padding: '2px',
-                        color: item.isFavorite ? '#d97706' : '#9ca3af',
+                        color: item.isFavorite ? 'var(--cohere-amber)' : '#9ca3af',
                         marginTop: '2px',
                       }}
                       title={item.isFavorite ? 'Remove from favorites' : 'Mark as favorite'}
@@ -406,12 +406,12 @@ export default function HistoryModal({
                       <button
                         onClick={(e) => handleCopySql(e, item.sql!, item.id)}
                         className="btn-cohere-pill-outline"
-                        style={{ padding: '2px 6px', fontSize: '10px', backgroundColor: '#ffffff' }}
+                        style={{ padding: '2px 6px', fontSize: '10px', backgroundColor: 'var(--bg-card)' }}
                         title="Copy SQL query"
                       >
                         {copiedId === item.id ? (
                           <>
-                            <Check style={{ width: '0.65rem', height: '0.65rem', color: '#059669' }} />
+                            <Check style={{ width: '0.65rem', height: '0.65rem', color: 'var(--cohere-deep-green)' }} />
                             <span>Copied</span>
                           </>
                         ) : (

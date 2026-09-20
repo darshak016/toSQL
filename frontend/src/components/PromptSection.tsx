@@ -33,7 +33,7 @@ export default function PromptSection({
 
   return (
     <div style={{
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-card)',
       border: '1px solid var(--cohere-hairline)',
       borderRadius: 'var(--radius-md)',
       padding: '1.25rem 1.5rem',
@@ -107,21 +107,22 @@ export default function PromptSection({
           padding: '0.5rem 0.75rem',
           marginBottom: '0.75rem',
           borderRadius: 'var(--radius-xs)',
-          backgroundColor: '#eff6ff',
-          border: '1px solid #bfdbfe',
+          backgroundColor: 'var(--cohere-pale-blue)',
+          border: '1px solid var(--cohere-hairline)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
             <span style={{
               display: 'inline-flex',
               alignItems: 'center',
-              padding: '1px 6px',
+              padding: '2px 8px',
               borderRadius: 'var(--radius-xs)',
-              backgroundColor: '#dbeafe',
-              color: '#1d4ed8',
+              backgroundColor: 'rgba(59, 130, 246, 0.15)',
+              color: 'var(--cohere-action-blue)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.65rem',
               fontWeight: 700,
               textTransform: 'uppercase',
+              letterSpacing: '0.04em',
               flexShrink: 0
             }}>
               Follow-Up Mode
@@ -129,7 +130,7 @@ export default function PromptSection({
             <span style={{
               fontFamily: 'var(--font-body)',
               fontSize: '0.75rem',
-              color: '#1e40af',
+              color: 'var(--cohere-ink)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -147,16 +148,18 @@ export default function PromptSection({
                 cursor: 'pointer',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.7rem',
-                color: '#60a5fa',
+                color: 'var(--cohere-action-blue)',
                 padding: '2px 6px',
                 borderRadius: 'var(--radius-xs)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '3px',
-                flexShrink: 0
+                flexShrink: 0,
+                opacity: 0.85,
+                transition: 'opacity 0.15s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#1e3a8a')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#60a5fa')}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.85')}
             >
               <span>New Thread ✕</span>
             </button>
@@ -199,8 +202,9 @@ export default function PromptSection({
                 fontSize: '11px',
                 padding: '3px 9px',
                 borderColor: prompt === chip.val ? 'var(--cohere-action-blue)' : 'var(--cohere-hairline)',
-                backgroundColor: prompt === chip.val ? '#dbeafe' : 'var(--cohere-soft-stone)',
-                color: prompt === chip.val ? '#1e40af' : 'var(--cohere-ink)',
+                backgroundColor: prompt === chip.val ? 'var(--cohere-pale-blue)' : 'var(--cohere-soft-stone)',
+                color: prompt === chip.val ? 'var(--cohere-action-blue)' : 'var(--cohere-ink)',
+                fontWeight: prompt === chip.val ? 600 : 400,
               }}
             >
               <span>{chip.label}</span>
@@ -260,7 +264,7 @@ export default function PromptSection({
       }}
         onFocusCapture={e => {
           (e.currentTarget as HTMLElement).style.borderColor = 'var(--cohere-primary)';
-          (e.currentTarget as HTMLElement).style.backgroundColor = '#ffffff';
+          (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-card)';
         }}
         onBlurCapture={e => {
           (e.currentTarget as HTMLElement).style.borderColor = 'var(--cohere-hairline)';
@@ -295,7 +299,7 @@ export default function PromptSection({
           justifyContent: 'space-between',
           padding: '0.625rem 1rem',
           borderTop: '1px solid var(--cohere-hairline)',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
         }}>
           <div style={{
             display: 'flex',

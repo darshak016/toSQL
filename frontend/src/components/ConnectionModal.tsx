@@ -39,10 +39,10 @@ export default function ConnectionModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--cohere-hairline)',
-          boxShadow: 'var(--shadow-console)',
+          boxShadow: 'var(--shadow-modal)',
           width: '100%',
           maxWidth: '480px',
           overflow: 'hidden',
@@ -66,7 +66,7 @@ export default function ConnectionModal({
               height: '2rem',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--cohere-primary)',
-              color: '#ffffff',
+              color: 'var(--cohere-canvas)',
             }}>
               <Database01 style={{ width: '1rem', height: '1rem' }} />
             </div>
@@ -119,7 +119,7 @@ export default function ConnectionModal({
                 padding: '0.875rem 1rem',
                 borderRadius: 'var(--radius-sm)',
                 border: selectedType === 'supabase' ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
-                backgroundColor: selectedType === 'supabase' ? 'var(--cohere-pale-green)' : '#ffffff',
+                backgroundColor: selectedType === 'supabase' ? 'var(--cohere-pale-green)' : 'var(--bg-card)',
                 cursor: 'pointer',
               }}
             >
@@ -149,7 +149,7 @@ export default function ConnectionModal({
                 padding: '0.875rem 1rem',
                 borderRadius: 'var(--radius-sm)',
                 border: selectedType === 'sample' ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
-                backgroundColor: selectedType === 'sample' ? 'var(--cohere-soft-stone)' : '#ffffff',
+                backgroundColor: selectedType === 'sample' ? 'var(--cohere-soft-stone)' : 'var(--bg-card)',
                 cursor: 'pointer',
               }}
             >
@@ -192,6 +192,8 @@ export default function ConnectionModal({
                   padding: '0.625rem 0.75rem',
                   borderRadius: 'var(--radius-xs)',
                   border: '1px solid var(--cohere-hairline)',
+                  backgroundColor: 'var(--bg-input)',
+                  color: 'var(--cohere-ink)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.78rem',
                   outline: 'none',

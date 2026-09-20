@@ -46,58 +46,140 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       const stack = this.state.error?.stack || this.state.errorInfo?.componentStack || '';
 
       return (
-        <div className="flex min-h-screen w-screen items-center justify-center bg-[#f9fafb] p-6 font-sans">
-          <div className="w-full max-w-lg rounded-2xl border border-[#eaecf0] bg-white p-7 shadow-lg">
+        <div style={{
+          display: 'flex',
+          minHeight: '100vh',
+          width: '100vw',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'var(--cohere-canvas)',
+          padding: '1.5rem',
+          fontFamily: 'var(--font-body)',
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '32rem',
+            borderRadius: 'var(--radius-xl)',
+            border: '1px solid var(--cohere-hairline)',
+            backgroundColor: 'var(--bg-card)',
+            padding: '1.75rem',
+            boxShadow: 'var(--shadow-modal)',
+          }}>
             {/* Header */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#fef3f2] text-[#d92d20] ring-4 ring-[#fee4e2]">
-                <AlertCircle className="size-6" />
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+              <div style={{
+                display: 'flex',
+                height: '3rem',
+                width: '3rem',
+                flexShrink: 0,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'rgba(217, 45, 32, 0.1)',
+                color: 'var(--cohere-error)',
+              }}>
+                <AlertCircle style={{ width: '1.5rem', height: '1.5rem' }} />
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[#101828]">
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  color: 'var(--cohere-ink)',
+                  margin: 0,
+                }}>
                   Something went wrong
                 </h3>
-                <p className="mt-1 text-xs leading-relaxed text-[#475467]">
+                <p style={{
+                  marginTop: '0.25rem',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.5',
+                  color: 'var(--cohere-muted)',
+                }}>
                   The application encountered an unexpected runtime error. You can reload or reset your browser state.
                 </p>
               </div>
             </div>
 
             {/* Error Message Box */}
-            <div className="mt-5 rounded-xl border border-[#fedf89] bg-[#fffaeb] p-3.5 text-xs text-[#b54708]">
-              <span className="font-semibold text-[#93370d]">Error: </span>
-              <span className="font-mono">{message}</span>
+            <div style={{
+              marginTop: '1.25rem',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid rgba(247, 144, 9, 0.3)',
+              backgroundColor: 'rgba(247, 144, 9, 0.08)',
+              padding: '0.875rem',
+              fontSize: '0.75rem',
+              color: 'var(--cohere-ink)',
+            }}>
+              <span style={{ fontWeight: 600, color: 'var(--cohere-coral)' }}>Error: </span>
+              <span style={{ fontFamily: 'var(--font-mono)' }}>{message}</span>
             </div>
 
             {/* Stack trace detail if present */}
             {stack && (
-              <details className="mt-3 text-[11px] text-[#667085]">
-                <summary className="cursor-pointer font-medium hover:text-[#101828]">
+              <details style={{ marginTop: '0.75rem', fontSize: '11px', color: 'var(--cohere-muted)' }}>
+                <summary style={{ cursor: 'pointer', fontWeight: 500 }}>
                   Show technical stack trace
                 </summary>
-                <pre className="mt-2 max-h-44 overflow-y-auto rounded-lg bg-[#0f172a] p-3 font-mono text-[10px] text-[#cbd5e1] leading-relaxed select-all">
+                <pre style={{
+                  marginTop: '0.5rem',
+                  maxHeight: '11rem',
+                  overflowY: 'auto',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--cohere-canvas)',
+                  border: '1px solid var(--cohere-hairline)',
+                  padding: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '10px',
+                  color: 'var(--cohere-slate)',
+                  lineHeight: '1.5',
+                  userSelect: 'all',
+                }}>
                   {stack}
                 </pre>
               </details>
             )}
 
             {/* Action Buttons */}
-            <div className="mt-6 flex flex-wrap items-center justify-end gap-3 border-t border-[#eaecf0] pt-4">
+            <div style={{
+              marginTop: '1.5rem',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: '0.75rem',
+              borderTop: '1px solid var(--cohere-hairline)',
+              paddingTop: '1rem',
+            }}>
               <button
                 type="button"
                 onClick={this.handleReset}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#eaecf0] bg-white px-3.5 py-2 text-xs font-semibold text-[#344054] shadow-xs transition hover:bg-[#f9fafb] hover:text-[#101828]"
+                className="btn-cohere-pill-outline"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  fontSize: '0.75rem',
+                  padding: '0.45rem 0.85rem',
+                }}
               >
-                <Trash01 className="size-3.5 text-[#98a2b3]" />
+                <Trash01 style={{ width: '0.85rem', height: '0.85rem', color: 'var(--cohere-muted)' }} />
                 <span>Reset Cache &amp; Storage</span>
               </button>
 
               <button
                 type="button"
                 onClick={this.handleReload}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-transparent bg-[#155eef] px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-[#174dc4]"
+                className="btn-cohere-primary"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  fontSize: '0.75rem',
+                  padding: '0.45rem 0.85rem',
+                }}
               >
-                <RefreshCw01 className="size-3.5 text-white" />
+                <RefreshCw01 style={{ width: '0.85rem', height: '0.85rem' }} />
                 <span>Reload Application</span>
               </button>
             </div>

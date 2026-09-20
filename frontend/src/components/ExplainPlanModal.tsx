@@ -64,7 +64,7 @@ export default function ExplainPlanModal({
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-md)',
           boxShadow: 'var(--shadow-modal)',
           border: '1px solid var(--cohere-hairline)',
@@ -89,7 +89,7 @@ export default function ExplainPlanModal({
                 width: '2.25rem',
                 height: '2.25rem',
                 borderRadius: 'var(--radius-sm)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-card)',
                 border: '1px solid var(--cohere-hairline)',
                 display: 'flex',
                 alignItems: 'center',
@@ -117,8 +117,8 @@ export default function ExplainPlanModal({
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.65rem',
                       fontWeight: 700,
-                      backgroundColor: 'var(--cohere-dark-navy)',
-                      color: '#ffffff',
+                      backgroundColor: 'var(--cohere-primary)',
+                      color: 'var(--cohere-canvas)',
                       padding: '2px 8px',
                       borderRadius: 'var(--radius-xs)',
                       textTransform: 'uppercase',
@@ -170,7 +170,7 @@ export default function ExplainPlanModal({
               justifyContent: 'space-between',
               gap: '0.75rem',
               padding: '0.75rem 1.5rem',
-              backgroundColor: '#fafafc',
+              backgroundColor: 'var(--cohere-soft-stone)',
               borderBottom: '1px solid var(--cohere-hairline)',
             }}
           >
@@ -187,9 +187,9 @@ export default function ExplainPlanModal({
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     fontFamily: 'var(--font-body)',
-                    backgroundColor: '#fef3c7',
-                    color: '#92400e',
-                    border: '1px solid #fde68a',
+                    backgroundColor: 'var(--cohere-amber-bg)',
+                    color: 'var(--cohere-amber-text)',
+                    border: '1px solid var(--cohere-amber-border)',
                   }}
                   title="Query scans entire table rows sequentially. Consider adding an index for high-scale tables."
                 >
@@ -207,9 +207,9 @@ export default function ExplainPlanModal({
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     fontFamily: 'var(--font-body)',
-                    backgroundColor: '#ecfdf5',
-                    color: '#065f46',
-                    border: '1px solid #a7f3d0',
+                    backgroundColor: 'var(--cohere-pale-green)',
+                    color: 'var(--cohere-deep-green)',
+                    border: '1px solid var(--cohere-success-border)',
                   }}
                 >
                   <Check style={{ width: '0.75rem', height: '0.75rem' }} />
@@ -228,9 +228,9 @@ export default function ExplainPlanModal({
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     fontFamily: 'var(--font-body)',
-                    backgroundColor: '#eff6ff',
-                    color: '#1e40af',
-                    border: '1px solid #bfdbfe',
+                    backgroundColor: 'var(--cohere-pale-blue)',
+                    color: 'var(--cohere-action-blue)',
+                    border: '1px solid var(--cohere-hairline)',
                   }}
                   title="Query efficiently takes advantage of indexed keys or B-trees."
                 >
@@ -261,7 +261,7 @@ export default function ExplainPlanModal({
                 style={{
                   display: 'flex',
                   gap: '2px',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--cohere-soft-stone)',
                   border: '1px solid var(--cohere-hairline)',
                   borderRadius: 'var(--radius-xl)',
                   padding: '2px',
@@ -281,7 +281,7 @@ export default function ExplainPlanModal({
                       fontFamily: 'var(--font-body)',
                       textTransform: 'capitalize',
                       backgroundColor: activeTab === tab ? 'var(--cohere-primary)' : 'transparent',
-                      color: activeTab === tab ? '#ffffff' : 'var(--cohere-muted)',
+                      color: activeTab === tab ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                       transition: 'all 0.15s ease',
                     }}
                   >
@@ -294,7 +294,7 @@ export default function ExplainPlanModal({
         )}
 
         {/* Modal Body */}
-        <div style={{ padding: '1.25rem', overflowY: 'auto', flex: 1, backgroundColor: '#ffffff' }}>
+        <div style={{ padding: '1.25rem', overflowY: 'auto', flex: 1, backgroundColor: 'var(--bg-card)' }}>
           {isLoading ? (
             <div 
               style={{
@@ -325,19 +325,19 @@ export default function ExplainPlanModal({
               style={{
                 padding: '1.25rem',
                 borderRadius: 'var(--radius-sm)',
-                backgroundColor: '#fef2f2',
-                border: '1px solid #fecaca',
+                backgroundColor: 'var(--cohere-error-bg)',
+                border: '1px solid var(--cohere-error-border)',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '0.75rem',
               }}
             >
-              <AlertCircle style={{ width: '1.25rem', height: '1.25rem', color: '#b91c1c', flexShrink: 0, marginTop: '2px' }} />
+              <AlertCircle style={{ width: '1.25rem', height: '1.25rem', color: 'var(--cohere-error)', flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', fontWeight: 600, color: '#991b1b', marginBottom: '0.25rem' }}>
+                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '0.9rem', fontWeight: 600, color: 'var(--cohere-error)', marginBottom: '0.25rem' }}>
                   Execution Plan Error
                 </h4>
-                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: '#b91c1c', lineHeight: 1.5 }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--cohere-error)', lineHeight: 1.5 }}>
                   {plan.error}
                 </p>
               </div>
@@ -373,21 +373,21 @@ export default function ExplainPlanModal({
                           const isTemp = line.toLowerCase().includes('temp') || line.toLowerCase().includes('b-tree');
 
                           let badgeLabel = 'Execution Node';
-                          let badgeBg = '#f3f4f6';
-                          let badgeColor = '#374151';
+                          let badgeBg = 'var(--cohere-soft-stone)';
+                          let badgeColor = 'var(--cohere-muted)';
 
                           if (isScan) {
                             badgeLabel = 'Table Scan';
-                            badgeBg = '#fef3c7';
-                            badgeColor = '#92400e';
+                            badgeBg = 'var(--cohere-amber-bg)';
+                            badgeColor = 'var(--cohere-amber-text)';
                           } else if (isSearch) {
                             badgeLabel = 'Index Search';
-                            badgeBg = '#ecfdf5';
-                            badgeColor = '#065f46';
+                            badgeBg = 'var(--cohere-pale-green)';
+                            badgeColor = 'var(--cohere-deep-green)';
                           } else if (isTemp) {
                             badgeLabel = 'Temp Memory';
-                            badgeBg = '#f5f3ff';
-                            badgeColor = '#6b21a8';
+                            badgeBg = 'var(--cohere-purple-bg)';
+                            badgeColor = 'var(--cohere-purple-text)';
                           }
 
                           return (
@@ -395,7 +395,7 @@ export default function ExplainPlanModal({
                               key={idx} 
                               style={{ 
                                 borderBottom: idx === plan.raw_plan.length - 1 ? 'none' : '1px solid var(--cohere-hairline)',
-                                backgroundColor: idx % 2 === 1 ? '#fafafa' : '#ffffff',
+                                backgroundColor: idx % 2 === 1 ? 'var(--cohere-soft-stone)' : 'var(--bg-card)',
                               }}
                             >
                               <td style={{ padding: '0.6rem 0.85rem', fontFamily: 'var(--font-mono)', color: 'var(--cohere-muted)' }}>
@@ -465,15 +465,15 @@ export default function ExplainPlanModal({
                       right: '0.75rem',
                       padding: '4px 10px',
                       fontSize: '11px',
-                      backgroundColor: copied ? '#ecfdf5' : '#ffffff',
-                      borderColor: copied ? '#a7f3d0' : 'var(--cohere-hairline)',
-                      color: copied ? '#059669' : 'var(--cohere-ink)',
+                      backgroundColor: copied ? 'var(--cohere-pale-green)' : 'var(--bg-card)',
+                      borderColor: copied ? 'var(--cohere-success)' : 'var(--cohere-hairline)',
+                      color: copied ? 'var(--cohere-success)' : 'var(--cohere-ink)',
                       zIndex: 2,
                     }}
                   >
                     {copied ? (
                       <>
-                        <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                        <Check style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-deep-green)' }} />
                         <span>Copied!</span>
                       </>
                     ) : (

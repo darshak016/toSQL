@@ -52,7 +52,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
         justifyContent: 'space-between',
         padding: '1rem 1.25rem',
         borderBottom: '1px solid var(--cohere-hairline)',
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'var(--cohere-soft-stone)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
           <Database01 style={{ width: '0.9rem', height: '0.9rem', color: 'var(--cohere-primary)' }} />
@@ -91,7 +91,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
             fontSize: '0.7rem',
             fontWeight: 600,
             color: 'var(--cohere-primary)',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-card)',
             border: '1px solid var(--cohere-hairline)',
             padding: '2px 8px',
             borderRadius: 'var(--radius-xl)',
@@ -125,7 +125,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
               paddingBottom: '0.45rem',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--cohere-hairline)',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-card)',
               color: 'var(--cohere-ink)',
               fontSize: '0.75rem',
               outline: 'none',
@@ -158,7 +158,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
                 style={{
                   marginBottom: '4px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: isExpanded ? '#ffffff' : 'transparent',
+                  backgroundColor: isExpanded ? 'var(--bg-card)' : 'transparent',
                   border: isExpanded ? '1px solid var(--cohere-hairline)' : '1px solid transparent',
                   transition: 'all 0.15s ease',
                 }}
@@ -176,7 +176,7 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
                     borderRadius: 'var(--radius-sm)',
                   }}
                   onMouseEnter={e => {
-                    if (!isExpanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+                    if (!isExpanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-card)';
                   }}
                   onMouseLeave={e => {
                     if (!isExpanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';

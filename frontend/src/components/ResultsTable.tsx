@@ -128,7 +128,7 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: '#ffffff' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', backgroundColor: 'var(--bg-card)' }}>
       {/* Table Toolbar */}
       <div style={{
         display: 'flex',
@@ -165,7 +165,7 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
               paddingBottom: '0.4rem',
               borderRadius: 'var(--radius-xs)',
               border: '1px solid var(--cohere-hairline)',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-input)',
               color: 'var(--cohere-ink)',
               fontSize: '0.78rem',
               outline: 'none',
@@ -194,15 +194,15 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
             style={{ 
               padding: '4px 10px', 
               fontSize: '11px',
-              backgroundColor: copiedMd ? '#ecfdf5' : 'transparent',
-              borderColor: copiedMd ? '#a7f3d0' : 'var(--cohere-hairline)',
-              color: copiedMd ? '#059669' : 'var(--cohere-ink)'
+              backgroundColor: copiedMd ? 'var(--cohere-pale-green)' : 'transparent',
+              borderColor: copiedMd ? 'var(--cohere-deep-green)' : 'var(--cohere-hairline)',
+              color: copiedMd ? 'var(--cohere-deep-green)' : 'var(--cohere-ink)'
             }}
             title="Copy table to clipboard as Markdown format"
           >
             {copiedMd ? (
               <>
-                <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                <Check style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-deep-green)' }} />
                 <span>Copied MD!</span>
               </>
             ) : (
@@ -288,11 +288,11 @@ export default function ResultsTable({ columns = [], rows = [] }: ResultsTablePr
                   key={rIdx}
                   style={{
                     borderBottom: '1px solid var(--cohere-hairline)',
-                    backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#fafafa',
+                    backgroundColor: rIdx % 2 === 0 ? 'var(--bg-card)' : 'var(--cohere-soft-stone)',
                     transition: 'background-color 0.1s ease',
                   }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cohere-pale-blue)'}
-                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = rIdx % 2 === 0 ? '#ffffff' : '#fafafa'}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--cohere-stone-hover)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = rIdx % 2 === 0 ? 'var(--bg-card)' : 'var(--cohere-soft-stone)'}
                 >
                   {row.map((cell, cIdx) => (
                     <td

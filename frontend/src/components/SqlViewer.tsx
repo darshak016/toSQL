@@ -29,13 +29,13 @@ function highlightSql(sql: string): React.ReactNode[] {
 
     html = html.replace(tokenRegex, (_match, str, kw, num) => {
       if (str !== undefined) {
-        return `<span style="color:#059669;font-weight:500">${str}</span>`;
+        return `<span style="color:var(--cohere-deep-green);font-weight:500">${str}</span>`;
       }
       if (kw !== undefined) {
-        return `<span style="color:#1d4ed8;font-weight:700">${kw.toUpperCase()}</span>`;
+        return `<span style="color:var(--cohere-action-blue);font-weight:700">${kw.toUpperCase()}</span>`;
       }
       if (num !== undefined) {
-        return `<span style="color:#d97706;font-weight:600">${num}</span>`;
+        return `<span style="color:var(--cohere-coral);font-weight:600">${num}</span>`;
       }
       return _match;
     });
@@ -48,7 +48,7 @@ function highlightSql(sql: string): React.ReactNode[] {
           textAlign: 'right',
           fontFamily: 'var(--font-mono)',
           fontSize: '0.72rem',
-          color: '#9ca3af',
+          color: 'var(--cohere-muted)',
           minWidth: '2.5rem',
         }}>
           {idx + 1}
@@ -59,7 +59,7 @@ function highlightSql(sql: string): React.ReactNode[] {
             fontFamily: 'var(--font-mono)',
             fontSize: '0.8rem',
             lineHeight: 1.7,
-            color: '#111827',
+            color: 'var(--cohere-ink)',
           }}
           dangerouslySetInnerHTML={{ __html: html || '&nbsp;' }}
         />
@@ -115,7 +115,7 @@ export default function SqlViewer({
     <div style={{
       borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--cohere-hairline)',
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-card)',
       overflow: 'hidden',
       boxShadow: 'var(--shadow-subtle)',
     }}>
@@ -147,7 +147,7 @@ export default function SqlViewer({
             fontSize: '0.65rem',
             fontWeight: 600,
             color: 'var(--cohere-muted)',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-card)',
             border: '1px solid var(--cohere-hairline)',
             padding: '1px 6px',
             borderRadius: 'var(--radius-xs)',
@@ -179,20 +179,20 @@ export default function SqlViewer({
             style={{ 
               padding: '4px 10px', 
               fontSize: '11px',
-              backgroundColor: formattedToast ? '#ecfdf5' : 'transparent',
-              borderColor: formattedToast ? '#a7f3d0' : 'var(--cohere-hairline)',
-              color: formattedToast ? '#059669' : 'var(--cohere-ink)'
+              backgroundColor: formattedToast ? 'var(--cohere-pale-green)' : 'transparent',
+              borderColor: formattedToast ? 'var(--cohere-success-border)' : 'var(--cohere-hairline)',
+              color: formattedToast ? 'var(--cohere-deep-green)' : 'var(--cohere-ink)'
             }}
             title="Auto-format and uppercase SQL keywords"
           >
             {formattedToast ? (
               <>
-                <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                <Check style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-deep-green)' }} />
                 <span>Formatted!</span>
               </>
             ) : (
               <>
-                <Zap style={{ width: '0.75rem', height: '0.75rem', color: '#d97706' }} />
+                <Zap style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-coral)' }} />
                 <span>Format SQL</span>
               </>
             )}
@@ -205,14 +205,14 @@ export default function SqlViewer({
             style={{ 
               padding: '4px 10px', 
               fontSize: '11px',
-              backgroundColor: copied ? '#ecfdf5' : 'transparent',
-              borderColor: copied ? '#a7f3d0' : 'var(--cohere-hairline)',
-              color: copied ? '#059669' : 'var(--cohere-ink)'
+              backgroundColor: copied ? 'var(--cohere-pale-green)' : 'transparent',
+              borderColor: copied ? 'var(--cohere-success-border)' : 'var(--cohere-hairline)',
+              color: copied ? 'var(--cohere-deep-green)' : 'var(--cohere-ink)'
             }}
           >
             {copied ? (
               <>
-                <Check style={{ width: '0.75rem', height: '0.75rem', color: '#059669' }} />
+                <Check style={{ width: '0.75rem', height: '0.75rem', color: 'var(--cohere-deep-green)' }} />
                 <span>Copied</span>
               </>
             ) : (
@@ -257,8 +257,8 @@ export default function SqlViewer({
         </div>
       </div>
 
-      {/* Light Editor / Highlighted Body */}
-      <div style={{ padding: '1.25rem', backgroundColor: '#fafafc' }}>
+      {/* Light / Dark Editor / Highlighted Body */}
+      <div style={{ padding: '1.25rem', backgroundColor: 'var(--cohere-canvas)' }}>
         {isEditing ? (
           <textarea
             value={editableSql}
@@ -266,7 +266,7 @@ export default function SqlViewer({
             rows={Math.max(4, editableSql.split('\n').length + 1)}
             style={{
               width: '100%',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-card)',
               color: 'var(--cohere-ink)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.8rem',

@@ -77,7 +77,7 @@ export default function ExplanationCard({
                   gap: '0.35rem',
                   padding: '2px 9px',
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: '#f5f3ef',
+                  backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--cohere-hairline)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.7rem',
@@ -100,9 +100,9 @@ export default function ExplanationCard({
                   width: '280px',
                   padding: '0.85rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--cohere-hairline)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                  boxShadow: 'var(--shadow-modal)',
                   fontSize: '0.75rem',
                   fontFamily: 'var(--font-body)',
                   color: 'var(--cohere-ink)',
@@ -115,17 +115,17 @@ export default function ExplanationCard({
                   </div>
 
                   <div style={{ marginBottom: '0.5rem' }}>
-                    <span style={{ fontWeight: 600, color: '#047857' }}>Retained in Prompt ({schemaPruning.retained_tables.length}):</span>
+                    <span style={{ fontWeight: 600, color: 'var(--cohere-deep-green)' }}>Retained in Prompt ({schemaPruning.retained_tables.length}):</span>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '3px' }}>
                       {schemaPruning.retained_tables.map(t => (
                         <span key={t} style={{
                           padding: '1px 6px',
                           borderRadius: '4px',
-                          backgroundColor: '#ecfdf5',
-                          border: '1px solid #a7f3d0',
+                          backgroundColor: 'var(--cohere-pale-green)',
+                          border: '1px solid var(--cohere-success-border)',
                           fontFamily: 'var(--font-mono)',
                           fontSize: '0.68rem',
-                          color: '#047857'
+                          color: 'var(--cohere-deep-green)'
                         }}>
                           {t}
                         </span>
@@ -141,11 +141,11 @@ export default function ExplanationCard({
                           <span key={t} style={{
                             padding: '1px 6px',
                             borderRadius: '4px',
-                            backgroundColor: '#f4f4f5',
-                            border: '1px solid #e4e4e7',
+                            backgroundColor: 'var(--cohere-soft-stone)',
+                            border: '1px solid var(--cohere-hairline)',
                             fontFamily: 'var(--font-mono)',
                             fontSize: '0.68rem',
-                            color: '#71717a'
+                            color: 'var(--cohere-muted)'
                           }}>
                             {t}
                           </span>
@@ -170,12 +170,12 @@ export default function ExplanationCard({
               gap: '0.35rem',
               padding: '2px 8px',
               borderRadius: 'var(--radius-xl)',
-              backgroundColor: '#ecfdf5',
-              border: '1px solid #a7f3d0',
+              backgroundColor: 'var(--cohere-pale-green)',
+              border: '1px solid var(--cohere-success-border)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.7rem',
               fontWeight: 600,
-              color: '#047857',
+              color: 'var(--cohere-deep-green)',
             }}>
               <Zap style={{ width: '0.75rem', height: '0.75rem' }} />
               Self-Healed AST
@@ -231,7 +231,7 @@ export default function ExplanationCard({
           gap: '0.75rem',
           padding: '0.875rem',
           borderRadius: 'var(--radius-xs)',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--cohere-soft-stone)',
           border: '1px solid var(--cohere-hairline)',
           marginBottom: '0.5rem',
         }}>
@@ -244,7 +244,7 @@ export default function ExplanationCard({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: '#4b5563',
+                color: 'var(--cohere-muted)',
                 marginBottom: '0.35rem',
               }}>
                 Tables Referenced
@@ -259,9 +259,9 @@ export default function ExplanationCard({
                       fontWeight: 600,
                       padding: '2px 6px',
                       borderRadius: 'var(--radius-xs)',
-                      backgroundColor: '#eff6ff',
-                      color: '#1d4ed8',
-                      border: '1px solid #bfdbfe',
+                      backgroundColor: 'var(--cohere-pale-blue)',
+                      color: 'var(--cohere-action-blue)',
+                      border: '1px solid var(--cohere-hairline)',
                     }}
                   >
                     {tbl}
@@ -280,7 +280,7 @@ export default function ExplanationCard({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: '#4b5563',
+                color: 'var(--cohere-muted)',
                 marginBottom: '0.35rem',
               }}>
                 Joins &amp; Relations
@@ -294,9 +294,9 @@ export default function ExplanationCard({
                       fontSize: '0.68rem',
                       padding: '2px 6px',
                       borderRadius: 'var(--radius-xs)',
-                      backgroundColor: '#f5f3ff',
-                      color: '#6d28d9',
-                      border: '1px solid #ddd6fe',
+                      backgroundColor: 'var(--cohere-purple-bg)',
+                      color: 'var(--cohere-purple-text)',
+                      border: '1px solid var(--cohere-purple-border)',
                     }}
                   >
                     {jn}
@@ -315,7 +315,7 @@ export default function ExplanationCard({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: '#4b5563',
+                color: 'var(--cohere-muted)',
                 marginBottom: '0.35rem',
               }}>
                 Applied Filters
@@ -329,9 +329,9 @@ export default function ExplanationCard({
                       fontSize: '0.68rem',
                       padding: '2px 6px',
                       borderRadius: 'var(--radius-xs)',
-                      backgroundColor: '#fef3c7',
-                      color: '#b45309',
-                      border: '1px solid #fde68a',
+                      backgroundColor: 'var(--cohere-amber-bg)',
+                      color: 'var(--cohere-amber-text)',
+                      border: '1px solid var(--cohere-amber-border)',
                     }}
                   >
                     {flt}
@@ -350,7 +350,7 @@ export default function ExplanationCard({
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: '#4b5563',
+                color: 'var(--cohere-muted)',
                 marginBottom: '0.35rem',
               }}>
                 Aggregations
@@ -364,9 +364,9 @@ export default function ExplanationCard({
                       fontSize: '0.68rem',
                       padding: '2px 6px',
                       borderRadius: 'var(--radius-xs)',
-                      backgroundColor: '#ecfdf5',
-                      color: '#047857',
-                      border: '1px solid #a7f3d0',
+                      backgroundColor: 'var(--cohere-pale-green)',
+                      color: 'var(--cohere-deep-green)',
+                      border: '1px solid var(--cohere-success-border)',
                     }}
                   >
                     {agg}
@@ -383,8 +383,8 @@ export default function ExplanationCard({
         <div style={{
           marginTop: '0.875rem',
           borderRadius: 'var(--radius-xs)',
-          border: '1px solid #fed7aa',
-          backgroundColor: '#fffbeb',
+          border: '1px solid var(--cohere-amber-border)',
+          backgroundColor: 'var(--cohere-amber-bg)',
           padding: '0.75rem 1rem',
         }}>
           <div style={{
@@ -394,7 +394,7 @@ export default function ExplanationCard({
             fontFamily: 'var(--font-mono)',
             fontSize: '0.75rem',
             fontWeight: 700,
-            color: '#b45309',
+            color: 'var(--cohere-amber-text)',
             marginBottom: '0.375rem',
           }}>
             <Zap style={{ width: '0.8rem', height: '0.8rem' }} />
@@ -405,7 +405,7 @@ export default function ExplanationCard({
               <div key={i} style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.7rem',
-                color: '#78350f',
+                color: 'var(--cohere-amber-text)',
               }}>
                 Iteration {att.attempt}: {att.success ? '✓ Successfully resolved and passed AST inspection' : `⚠ Execution notice: "${att.error}" — Auto-adjusted schema mapping`}
               </div>

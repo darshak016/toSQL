@@ -9,7 +9,8 @@ import {
   Check, 
   FileCode,
   Terminal,
-  SearchLg
+  SearchLg,
+  BookOpen
 } from './Icons';
 
 interface DictionaryModalProps {
@@ -128,7 +129,7 @@ export default function DictionaryModal({
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-md)',
           boxShadow: 'var(--shadow-modal)',
           border: '1px solid var(--cohere-hairline)',
@@ -153,7 +154,7 @@ export default function DictionaryModal({
                 width: '2.25rem',
                 height: '2.25rem',
                 borderRadius: 'var(--radius-sm)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-card)',
                 border: '1px solid var(--cohere-hairline)',
                 display: 'flex',
                 alignItems: 'center',
@@ -181,7 +182,7 @@ export default function DictionaryModal({
                     fontSize: '0.65rem',
                     fontWeight: 700,
                     backgroundColor: 'var(--cohere-primary)',
-                    color: '#ffffff',
+                    color: 'var(--cohere-canvas)',
                     padding: '2px 8px',
                     borderRadius: 'var(--radius-xs)',
                   }}
@@ -229,7 +230,7 @@ export default function DictionaryModal({
             justifyContent: 'space-between',
             gap: '0.75rem',
             padding: '0.75rem 1.75rem',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-card)',
             borderBottom: '1px solid var(--cohere-hairline)',
           }}
         >
@@ -258,7 +259,7 @@ export default function DictionaryModal({
                 fontSize: '12px',
                 fontWeight: 600,
                 backgroundColor: activeTab === 'glossary' ? 'var(--cohere-primary)' : 'transparent',
-                color: activeTab === 'glossary' ? '#ffffff' : 'var(--cohere-muted)',
+                color: activeTab === 'glossary' ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -279,11 +280,11 @@ export default function DictionaryModal({
                 fontSize: '12px',
                 fontWeight: 600,
                 backgroundColor: activeTab === 'fewshots' ? 'var(--cohere-primary)' : 'transparent',
-                color: activeTab === 'fewshots' ? '#ffffff' : 'var(--cohere-muted)',
+                color: activeTab === 'fewshots' ? 'var(--cohere-canvas)' : 'var(--cohere-muted)',
                 transition: 'all 0.15s ease',
               }}
             >
-              <Code01 style={{ width: '0.75rem', height: '0.75rem' }} />
+              <BookOpen style={{ width: '0.75rem', height: '0.75rem' }} />
               <span>Few-Shot Examples ({fewShots.length})</span>
             </button>
           </div>
@@ -313,7 +314,7 @@ export default function DictionaryModal({
                 paddingBottom: '0.35rem',
                 borderRadius: 'var(--radius-xs)',
                 border: '1px solid var(--cohere-hairline)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-input)',
                 color: 'var(--cohere-ink)',
                 fontSize: '0.78rem',
                 outline: 'none',
@@ -326,7 +327,7 @@ export default function DictionaryModal({
         {/* Modal Body */}
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           {/* Main List Area */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', backgroundColor: '#fafafc' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', backgroundColor: 'var(--cohere-canvas)' }}>
             {activeTab === 'glossary' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {filteredTerms.length === 0 ? (
@@ -339,7 +340,7 @@ export default function DictionaryModal({
                       key={t.id || idx}
                       style={{
                         padding: '1rem',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: 'var(--bg-card)',
                         border: '1px solid var(--cohere-hairline)',
                         borderRadius: 'var(--radius-sm)',
                         boxShadow: 'var(--shadow-subtle)',
@@ -412,7 +413,7 @@ export default function DictionaryModal({
                       key={fs.id || idx}
                       style={{
                         padding: '1rem',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: 'var(--bg-card)',
                         border: '1px solid var(--cohere-hairline)',
                         borderRadius: 'var(--radius-sm)',
                         boxShadow: 'var(--shadow-subtle)',
@@ -489,7 +490,7 @@ export default function DictionaryModal({
           <div 
             style={{
               width: '21rem',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-card)',
               borderLeft: '1px solid var(--cohere-hairline)',
               padding: '1.25rem',
               overflowY: 'auto',
@@ -530,7 +531,9 @@ export default function DictionaryModal({
                       padding: '0.45rem 0.65rem',
                       borderRadius: 'var(--radius-xs)',
                       border: '1px solid var(--cohere-hairline)',
-                      fontSize: '0.78rem',
+                      backgroundColor: 'var(--bg-input)',
+                      color: 'var(--cohere-ink)',
+                      fontSize: '0.8rem',
                       fontFamily: 'var(--font-body)',
                       outline: 'none',
                     }}
@@ -603,7 +606,7 @@ export default function DictionaryModal({
                     alignItems: 'center',
                     gap: '0.35rem',
                     fontSize: '0.72rem',
-                    color: '#059669',
+                    color: 'var(--cohere-deep-green)',
                     fontFamily: 'var(--font-body)',
                     fontWeight: 600,
                   }}>
@@ -717,7 +720,7 @@ export default function DictionaryModal({
                     alignItems: 'center',
                     gap: '0.35rem',
                     fontSize: '0.72rem',
-                    color: '#059669',
+                    color: 'var(--cohere-deep-green)',
                     fontFamily: 'var(--font-body)',
                     fontWeight: 600,
                   }}>

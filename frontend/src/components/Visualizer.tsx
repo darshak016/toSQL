@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import type { ChartConfig } from '../types';
 import { BarChart03, BarLineChart, PieChart01 } from './Icons';
 
-// Cohere 2026 Curated Color Palette for Visualizations
+// Cohere 2026 Curated Color Palette for Visualizations (high contrast in both dark & light modes)
 const COHERE_CHART_PALETTE = [
-  '#003c33', // Deep Enterprise Green
-  '#1863dc', // Action Blue
+  '#00a884', // Emerald
+  '#3b82f6', // Bright Blue
   '#ff7759', // Coral
-  '#17171c', // Near-Black
-  '#071829', // Dark Navy
-  '#75758a', // Slate
-  '#00875a', // Emerald
-  '#9b60aa', // Accent Violet
+  '#a855f7', // Purple
+  '#f59e0b', // Amber
+  '#06b6d4', // Cyan
+  '#ec4899', // Pink
+  '#10b981', // Green
 ];
 
 interface VisualizerProps {
@@ -143,9 +143,9 @@ export default function Visualizer({
                 padding: '4px 10px',
                 borderRadius: 'var(--radius-xl)',
                 border: 'none',
-                backgroundColor: chartType === btn.id ? '#ffffff' : 'transparent',
+                backgroundColor: chartType === btn.id ? 'var(--bg-card)' : 'transparent',
                 color: chartType === btn.id ? 'var(--cohere-primary)' : 'var(--cohere-muted)',
-                boxShadow: chartType === btn.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                boxShadow: chartType === btn.id ? '0 1px 4px rgba(0,0,0,0.12)' : 'none',
                 fontFamily: 'var(--font-body)',
                 fontSize: '11px',
                 fontWeight: 600,

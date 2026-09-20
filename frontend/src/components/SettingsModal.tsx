@@ -43,10 +43,10 @@ export default function SettingsModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--cohere-hairline)',
-          boxShadow: 'var(--shadow-console)',
+          boxShadow: 'var(--shadow-modal)',
           width: '100%',
           maxWidth: '460px',
           overflow: 'hidden',
@@ -70,7 +70,7 @@ export default function SettingsModal({
               height: '2rem',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--cohere-primary)',
-              color: '#ffffff',
+              color: 'var(--cohere-canvas)',
             }}>
               <Key01 style={{ width: '1rem', height: '1rem' }} />
             </div>
@@ -135,7 +135,7 @@ export default function SettingsModal({
                     padding: '0.625rem',
                     borderRadius: 'var(--radius-sm)',
                     border: provider === p.id ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
-                    backgroundColor: provider === p.id ? 'var(--cohere-soft-stone)' : '#ffffff',
+                    backgroundColor: provider === p.id ? 'var(--cohere-soft-stone)' : 'var(--bg-card)',
                     fontFamily: 'var(--font-body)',
                     fontSize: '0.8rem',
                     fontWeight: 600,
@@ -169,6 +169,8 @@ export default function SettingsModal({
                 padding: '0.625rem 0.75rem',
                 borderRadius: 'var(--radius-xs)',
                 border: '1px solid var(--cohere-hairline)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--cohere-ink)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.78rem',
                 outline: 'none',
@@ -199,6 +201,8 @@ export default function SettingsModal({
                 padding: '0.625rem 0.75rem',
                 borderRadius: 'var(--radius-xs)',
                 border: '1px solid var(--cohere-hairline)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--cohere-ink)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.78rem',
                 outline: 'none',

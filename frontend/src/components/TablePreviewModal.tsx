@@ -24,10 +24,10 @@ export default function TablePreviewModal({
       <div 
         onClick={(e) => e.stopPropagation()}
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-card)',
           borderRadius: 'var(--radius-lg)',
           border: '1px solid var(--cohere-hairline)',
-          boxShadow: 'var(--shadow-console)',
+          boxShadow: 'var(--shadow-modal)',
           width: '100%',
           maxWidth: '720px',
           overflow: 'hidden',
@@ -51,7 +51,7 @@ export default function TablePreviewModal({
               height: '2rem',
               borderRadius: 'var(--radius-sm)',
               backgroundColor: 'var(--cohere-primary)',
-              color: '#ffffff',
+              color: 'var(--cohere-canvas)',
             }}>
               <Table style={{ width: '1rem', height: '1rem' }} />
             </div>
@@ -70,7 +70,7 @@ export default function TablePreviewModal({
                   fontSize: '0.65rem',
                   padding: '1px 6px',
                   borderRadius: 'var(--radius-xl)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
                   border: '1px solid var(--cohere-hairline)',
                   color: 'var(--cohere-primary)',
                 }}>
@@ -147,7 +147,7 @@ export default function TablePreviewModal({
                       key={rIdx}
                       style={{
                         borderBottom: '1px solid var(--cohere-hairline)',
-                        backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#fafafa',
+                        backgroundColor: rIdx % 2 === 0 ? 'var(--bg-card)' : 'var(--cohere-soft-stone)',
                       }}
                     >
                       {row.map((val, cIdx) => (
@@ -193,7 +193,7 @@ export default function TablePreviewModal({
           justifyContent: 'flex-end',
           padding: '0.75rem 1.25rem',
           borderTop: '1px solid var(--cohere-hairline)',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--cohere-soft-stone)',
         }}>
           <button
             onClick={onClose}
