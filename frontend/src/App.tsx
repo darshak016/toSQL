@@ -109,6 +109,7 @@ export default function App() {
 
   // Modals & Settings
   const [isConnectOpen, setIsConnectOpen] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isErdOpen, setIsErdOpen] = useState(false);
   const [isExplainOpen, setIsExplainOpen] = useState(false);
@@ -228,6 +229,7 @@ export default function App() {
 
   // Handle Switch Database
   const handleConnect = async (dbUrl: string, useSample: boolean) => {
+    setIsConnecting(true);
     try {
       const res = await connectDatabase(dbUrl, useSample);
       setDbInfo({
@@ -240,6 +242,8 @@ export default function App() {
       setErrorBanner(null);
     } catch (err) {
       alert(`Connection failed: ${(err as Error).message}`);
+    } finally {
+      setIsConnecting(false);
     }
   };
 
@@ -765,7 +769,7 @@ export default function App() {
         onClose={() => setIsConnectOpen(false)}
         currentDbUrl={dbInfo?.active_db_url}
         onConnect={handleConnect}
-        isLoading={false}
+        isLoading={isConnecting}
       />
 
       {/* AI Settings Dialog */}

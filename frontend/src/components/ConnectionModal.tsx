@@ -254,9 +254,35 @@ export default function ConnectionModal({
               type="submit"
               disabled={isLoading || (selectedType === 'supabase' && !customUrl.trim())}
               className="btn-cohere-primary"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                opacity: isLoading ? 0.75 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+              }}
             >
-              <Check style={{ width: '0.85rem', height: '0.85rem' }} />
-              <span>{isLoading ? 'Connecting...' : 'Connect Database'}</span>
+              {isLoading ? (
+                <>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    style={{ animation: 'spin 1s linear infinite' }}
+                  >
+                    <path d="M21 12a9 9 0 11-6.219-8.56" />
+                  </svg>
+                  <span>Connecting Database...</span>
+                </>
+              ) : (
+                <>
+                  <Check style={{ width: '0.85rem', height: '0.85rem' }} />
+                  <span>Connect Database</span>
+                </>
+              )}
             </button>
           </div>
         </form>
