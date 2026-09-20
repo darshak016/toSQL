@@ -75,6 +75,15 @@ export interface QueryResult {
   chart_config?: ChartConfig;
   attempts?: QueryAttempt[];
   error?: string;
+  schema_pruning?: PruningMetadata;
+}
+
+export interface PruningMetadata {
+  is_pruned: boolean;
+  total_tables: number;
+  retained_tables: string[];
+  pruned_tables: string[];
+  estimated_tokens_saved: number;
 }
 
 
@@ -111,6 +120,8 @@ export interface GenerateQueryParams {
   previousPrompt?: string;
   glossaryTerms?: GlossaryTerm[];
   fewShotExamples?: FewShotExample[];
+  pruneSchema?: boolean;
+  maxTables?: number;
 }
 
 

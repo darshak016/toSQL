@@ -83,7 +83,9 @@ export async function generateAndRunQuery({
   previousSql,
   previousPrompt,
   glossaryTerms,
-  fewShotExamples
+  fewShotExamples,
+  pruneSchema,
+  maxTables
 }: GenerateQueryParams): Promise<QueryResult> {
   const res = await fetch(`${API_BASE}/query/generate-and-run`, {
     method: "POST",
@@ -97,7 +99,9 @@ export async function generateAndRunQuery({
       previous_sql: previousSql || null,
       previous_prompt: previousPrompt || null,
       glossary_terms: glossaryTerms || null,
-      few_shot_examples: fewShotExamples || null
+      few_shot_examples: fewShotExamples || null,
+      prune_schema: pruneSchema ?? true,
+      max_tables: maxTables || null
     })
   });
   if (!res.ok) {

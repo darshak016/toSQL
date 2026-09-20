@@ -11,9 +11,8 @@ Below is the breakdown of potential improvements categorized by impact and archi
 ### A. AI Engine & NL-to-SQL Accuracy (Highest Impact)
 1. **Multi-Turn Conversational Follow-ups (Chat History)** ✅ *(Completed)*:
    - *Implemented*: Context passing (`previous_sql`, `previous_prompt`), LLM prompt augmentation, follow-up badge, quick refinement chips, and "New Thread" reset button.
-2. **Schema Pruning & Token Optimization for Large Databases**:
-   - *Current*: `DatabaseIntrospector` feeds all tables, column names, foreign keys, and distinct values directly into the LLM prompt. On enterprise databases with 50+ tables, this risks token overflow, slower latency, and hallucinated joins.
-   - *Improvement*: Add vector/embedding-based or lexical schema pruning to select only the top relevant tables/columns for the prompt.
+2. **Schema Pruning & Token Optimization for Large Databases** ✅ *(Completed)*:
+   - *Implemented*: Created `SchemaPruner` (`schema_pruner.py`) with lexical and token scoring across tables, columns, samples, and glossary terms; BFS shortest-path foreign key graph traversal to automatically retain join bridge tables; integrated into `DatabaseIntrospector.get_pruned_markdown_schema` and `TextToSQLEngine.process_natural_language_query`; added `PruningMetadata` model and response reporting; added interactive frontend token optimization badge & popover in `ExplanationCard.tsx`; verified with unit & integration tests (`test_schema_pruning.py`).
 3. **Query Explanation & SQL Breakdown** ✅ *(Completed)*:
    - *Implemented*: `QueryBreakdown` model in `schemas.py` (`tables_used`, `joins`, `filters`, `aggregations`, `assumptions`), AST fallback parser, and themed tag badges in `ExplanationCard.tsx`.
 4. **Few-Shot Examples / Custom Semantic Dictionaries** ✅ *(Completed)*:
@@ -86,6 +85,12 @@ Below is the breakdown of potential improvements categorized by impact and archi
    - Added backend REST endpoints `GET /api/database/dictionary` and `POST /api/database/dictionary`.
    - Implemented `DictionaryModal.tsx` dual-tab management UI, synced with localStorage and backend, with a badge counter in `Navbar.tsx` and 1-click test button.
    - Added comprehensive pytest suite in `backend/tests/test_semantic_dictionary.py`.
+- **2.4 Schema Pruning & Token Optimization** ✅ *(Completed)*:
+   - Created `SchemaPruner` (`schema_pruner.py`) scoring tables, columns, sample values, and glossary terms.
+   - Implemented BFS foreign key graph bridge discovery to retain intermediate join tables (e.g. `order_items`).
+   - Integrated into `DatabaseIntrospector.get_pruned_markdown_schema` and `TextToSQLEngine.process_natural_language_query`.
+   - Added `PruningMetadata` reporting in `QueryResponse` and interactive UI badge with popover in `ExplanationCard.tsx`.
+   - Added test suite in `backend/tests/test_schema_pruning.py`.
 
 ### Phase 3: Visual Analytics & Schema Exploration
 - **3.1 Enhanced Interactive Visualizer**:

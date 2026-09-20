@@ -624,6 +624,7 @@ export default function App() {
                 executionTimeMs={queryResult.data?.execution_time_ms}
                 rowCount={queryResult.data?.row_count}
                 attempts={queryResult.attempts}
+                schemaPruning={queryResult.schema_pruning}
               />
             </div>
           )}
