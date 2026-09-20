@@ -28,10 +28,7 @@
   "include": ["src", "vite-env.d.ts"],
   "exclude": [
     "node_modules",
-    "dist",
-    "src/components/base",
-    "src/components/foundations",
-    "src/components/application"
+    "dist"
   ]
 }
 
