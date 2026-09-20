@@ -10,6 +10,7 @@ import {
   XClose, 
   Terminal,
 } from './Icons';
+import { highlightSql } from './SqlCodeBlock';
 
 interface DictionaryModalProps {
   isOpen: boolean;
@@ -486,19 +487,18 @@ export default function DictionaryModal({
                         </div>
                       )}
 
-                      <pre style={{
+                      <div style={{
                         margin: 0,
-                        padding: '0.6rem 0.85rem',
-                        backgroundColor: 'var(--cohere-dark-navy)',
-                        color: '#f8fafc',
+                        padding: '0.625rem 0.85rem',
+                        backgroundColor: 'var(--cohere-canvas)',
                         borderRadius: 'var(--radius-xs)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.75rem',
-                        lineHeight: 1.5,
+                        border: '1px solid var(--cohere-hairline)',
                         overflowX: 'auto',
                       }}>
-                        {fs.sql}
-                      </pre>
+                        <div style={{ display: 'table', width: '100%', overflowX: 'auto' }}>
+                          {highlightSql(fs.sql, true)}
+                        </div>
+                      </div>
                     </div>
                   ))
                 )}

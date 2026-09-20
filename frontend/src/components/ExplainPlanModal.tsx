@@ -12,6 +12,7 @@ import {
   Database01,
   LayersThree01
 } from './Icons';
+import { highlightSql } from './SqlCodeBlock';
 
 interface ExplainPlanModalProps {
   isOpen: boolean;
@@ -539,23 +540,19 @@ export default function ExplainPlanModal({
                     <Terminal style={{ width: '0.8rem', height: '0.8rem' }} />
                     <span>TARGET SQL QUERY BEING EXPLAINED</span>
                   </div>
-                  <pre 
+                  <div 
                     style={{
-                      backgroundColor: 'var(--cohere-soft-stone)',
-                      color: 'var(--cohere-ink)',
+                      backgroundColor: 'var(--cohere-canvas)',
                       border: '1px solid var(--cohere-hairline)',
                       padding: '1rem',
                       borderRadius: 'var(--radius-sm)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.8rem',
-                      lineHeight: 1.6,
                       overflowX: 'auto',
-                      whiteSpace: 'pre-wrap',
-                      margin: 0,
                     }}
                   >
-                    {plan.sql || sql}
-                  </pre>
+                    <div style={{ display: 'table', width: '100%', overflowX: 'auto' }}>
+                      {highlightSql(plan.sql || sql, true)}
+                    </div>
+                  </div>
                 </div>
               )}
             </>

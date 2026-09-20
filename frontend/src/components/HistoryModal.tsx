@@ -11,6 +11,7 @@ import {
   Check, 
   SearchLg, 
 } from './Icons';
+import { highlightSql } from './SqlCodeBlock';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -415,21 +416,17 @@ export default function HistoryModal({
                 {item.sql && (
                   <div style={{
                     position: 'relative',
-                    backgroundColor: 'var(--cohere-soft-stone)',
+                    backgroundColor: 'var(--cohere-canvas)',
                     borderRadius: 'var(--radius-xs)',
-                    padding: '0.5rem 0.75rem',
+                    padding: '0.625rem 0.75rem',
                     border: '1px solid var(--cohere-hairline)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.74rem',
-                    color: 'var(--cohere-ink)',
                     overflowX: 'auto',
-                    whiteSpace: 'pre-wrap',
-                    lineHeight: 1.4,
                   }}>
                     <div style={{
                       position: 'absolute',
                       top: '0.375rem',
                       right: '0.5rem',
+                      zIndex: 2,
                     }}>
                       <button
                         onClick={(e) => handleCopySql(e, item.sql!, item.id)}
@@ -450,7 +447,9 @@ export default function HistoryModal({
                         )}
                       </button>
                     </div>
-                    {item.sql}
+                    <div style={{ display: 'table', width: '100%', overflowX: 'auto', paddingRight: '4.5rem' }}>
+                      {highlightSql(item.sql, false)}
+                    </div>
                   </div>
                 )}
               </div>
