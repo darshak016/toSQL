@@ -21,12 +21,14 @@ export default function ConnectionModal({
   onClearError
 }: ConnectionModalProps) {
   const [customUrl, setCustomUrl] = useState(currentDbUrl || '');
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
-  useEffect(() => {
-    if (isOpen) {
-      setCustomUrl(currentDbUrl || '');
-    }
-  }, [isOpen, currentDbUrl]);
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
+    setCustomUrl(currentDbUrl || '');
+  } else if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
 
   useEffect(() => {
     if (!isOpen) return;

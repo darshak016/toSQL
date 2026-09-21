@@ -19,11 +19,16 @@ export default function SettingsModal({
   const [apiKey, setApiKey] = useState(settings.apiKey || '');
   const [modelName, setModelName] = useState(settings.modelName || 'gemini-2.5-flash');
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (isOpen && !prevIsOpen) {
+    setPrevIsOpen(true);
     setProvider(settings.provider || 'gemini');
     setApiKey(settings.apiKey || '');
     setModelName(settings.modelName || (settings.provider === 'openai' ? 'gpt-4o-mini' : 'gemini-2.5-flash'));
-  }, [settings, isOpen]);
+  } else if (!isOpen && prevIsOpen) {
+    setPrevIsOpen(false);
+  }
 
   useEffect(() => {
     if (!isOpen) return;

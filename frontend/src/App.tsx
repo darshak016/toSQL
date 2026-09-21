@@ -6,7 +6,6 @@ import type {
   QueryResult, 
   PreviewData, 
   SampleQuery, 
-  HistoryItem,
   ExplainPlanResponse,
   GlossaryTerm,
   FewShotExample
@@ -40,59 +39,31 @@ import {
 
 import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
-const STORAGE_KEY_HISTORY = 'tosql_query_history_v1';
-const STORAGE_KEY_THEME = 'tosql_theme_preference_v1';
+import { useTheme } from './hooks/useTheme';
+import { useQueryHistory } from './hooks/useQueryHistory';
 
 export default function App() {
-  // Theme State: 'light' | 'dark'
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_THEME);
-      if (saved === 'dark' || saved === 'light') return saved;
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    } catch {}
-    return 'light';
-  });
+  const { theme, toggleTheme } = useTheme();
+  const {
+    history,
+    isHistoryOpen,
+    setIsHistoryOpen,
+    recordHistoryItem,
+    toggleFavorite: handleToggleFavorite,
+    deleteHistoryItem: handleRemoveHistoryItem,
+    clearHistory,
+  } = useQueryHistory();
 
-  useEffect(() => {
-    try {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem(STORAGE_KEY_THEME, theme);
-    } catch (e) {
-      console.error('Failed to set theme attribute', e);
+  const handleClearHistory = () => {
+    if (window.confirm('Are you sure you want to clear all query history?')) {
+      clearHistory();
     }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
   // DB & Schema State
   const [dbInfo, setDbInfo] = useState<DbInfo | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [samples, setSamples] = useState<SampleQuery[]>([]);
-
-  // History & Favorites State
-  const [history, setHistory] = useState<HistoryItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_HISTORY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-
-  // Sync history changes to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
-    } catch (e) {
-      console.error('Failed to persist history to localStorage', e);
-    }
-  }, [history]);
 
   // Prompt & Query State
   const [prompt, setPrompt] = useState('');
@@ -228,11 +199,38 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadSchema();
+    let isMounted = true;
+    (async () => {
+      setIsRefreshing(true);
+      try {
+        const data = await fetchSchema();
+        if (isMounted) {
+          setDbInfo(data);
+          setErrorBanner(null);
+        }
+      } catch (err) {
+        const msg = (err as Error).message;
+        if (isMounted) {
+          if (msg.includes("No database connected")) {
+            setDbInfo(null);
+            setErrorBanner("No database connected. Connect via the 'Connect DB' button or configure DATABASE_URL in your backend/.env.");
+          } else {
+            setErrorBanner(`Could not load schema: ${msg}. Ensure backend is running.`);
+          }
+        }
+      } finally {
+        if (isMounted) setIsRefreshing(false);
+      }
+    })();
+
     fetchSampleQueries("", aiSettings).then(data => {
-      if (data?.samples) setSamples(data.samples);
+      if (isMounted && data?.samples) setSamples(data.samples);
     }).catch(() => {});
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [aiSettings]);
 
   // Handle Switch Database
   const handleConnect = async (dbUrl: string, useSample: boolean) => {
@@ -276,42 +274,6 @@ export default function App() {
     }
   };
 
-  // Record query into persistent history
-  const recordHistoryItem = (item: {
-    prompt: string;
-    sql?: string;
-    success: boolean;
-    rowCount?: number;
-    executionTimeMs?: number;
-  }) => {
-    const newItem: HistoryItem = {
-      id: `hist_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      prompt: item.prompt,
-      sql: item.sql,
-      timestamp: Date.now(),
-      success: item.success,
-      rowCount: item.rowCount,
-      executionTimeMs: item.executionTimeMs,
-      isFavorite: false,
-    };
-    setHistory(prev => [newItem, ...prev.slice(0, 99)]);
-  };
-
-  const handleToggleFavorite = (id: string) => {
-    setHistory(prev => prev.map(item => 
-      item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-    ));
-  };
-
-  const handleRemoveHistoryItem = (id: string) => {
-    setHistory(prev => prev.filter(item => item.id !== id));
-  };
-
-  const handleClearHistory = () => {
-    if (window.confirm('Are you sure you want to clear all query history?')) {
-      setHistory([]);
-    }
-  };
 
   const handleSelectHistoryQuery = (selectedPrompt: string, selectedSql?: string) => {
     setPrompt(selectedPrompt);

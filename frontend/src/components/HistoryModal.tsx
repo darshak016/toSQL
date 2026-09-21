@@ -11,7 +11,7 @@ import {
   Check, 
   SearchLg, 
 } from './Icons';
-import { highlightSql } from './SqlCodeBlock';
+import { highlightSql } from '../utils/sqlHighlighter';
 
 interface HistoryModalProps {
   isOpen: boolean;

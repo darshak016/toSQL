@@ -1,118 +1,107 @@
-# System Audit & Comprehensive Improvement Plan for toSQL
+# UI Codebase Improvements Implementation Plan
 
-An in-depth review of the **toSQL AI (Natural Language to SQL Engine)** codebase was conducted covering the backend architecture (`FastAPI`, `SQLAlchemy`, `sqlglot`, `Google GenAI / OpenAI`), database engine, security guardrails, and frontend client (`React 19`, `TypeScript`, `Vite`).
-
-Below is the breakdown of potential improvements categorized by impact and architecture, followed by a phased implementation plan.
+This plan addresses code health, architectural modularity, performance warnings, and test coverage across the `frontend` React application, aligned with the requirements in [AGENTS.md](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/AGENTS.md).
 
 ---
 
-## 1. Analysis of Areas for Improvement
+## 1. Objectives & Scope
 
-### A. AI Engine & NL-to-SQL Accuracy (Highest Impact)
-1. **Multi-Turn Conversational Follow-ups (Chat History)** ✅ *(Completed)*:
-   - *Implemented*: Context passing (`previous_sql`, `previous_prompt`), LLM prompt augmentation, follow-up badge, quick refinement chips, and "New Thread" reset button.
-2. **Schema Pruning & Token Optimization for Large Databases** ✅ *(Completed)*:
-   - *Implemented*: Created `SchemaPruner` (`schema_pruner.py`) with lexical and token scoring across tables, columns, samples, and glossary terms; BFS shortest-path foreign key graph traversal to automatically retain join bridge tables; integrated into `DatabaseIntrospector.get_pruned_markdown_schema` and `TextToSQLEngine.process_natural_language_query`; added `PruningMetadata` model and response reporting; added interactive frontend token optimization badge & popover in `ExplanationCard.tsx`; verified with unit & integration tests (`test_schema_pruning.py`).
-3. **Query Explanation & SQL Breakdown** ✅ *(Completed)*:
-   - *Implemented*: `QueryBreakdown` model in `schemas.py` (`tables_used`, `joins`, `filters`, `aggregations`, `assumptions`), AST fallback parser, and themed tag badges in `ExplanationCard.tsx`.
-4. **Few-Shot Examples / Custom Semantic Dictionaries** ✅ *(Completed)*:
-   - *Implemented*: Defined `GlossaryTerm`, `FewShotExample`, and `DictionaryConfig` models; augmented `build_sql_generation_prompt` with structured glossary rules and few-shot pairs; added `GET/POST /api/database/dictionary` endpoints with sample preset defaults; created `DictionaryModal.tsx` dual-tab management UI with instant local persistence and "Use Prompt" testing button; verified with pytest suite (`test_semantic_dictionary.py`) and TypeScript builds.
-
----
-
-### B. Execution, Data & Security Enhancements
-1. **Interactive Query History & Bookmarking / Favorites** ✅ *(Completed)*:
-   - *Implemented*: Persistent localStorage history tracking across sessions, favorite bookmarking (starring), search filtering, one-click query restoration, and modal drawer UI (`HistoryModal.tsx`).
-2. **SQL Execution Plan (`EXPLAIN / EXPLAIN QUERY PLAN`)** ✅ *(Completed)*:
-   - *Implemented*: `QueryRunner.explain_query(...)` and `validate_query_for_explain` with AST guardrail protections; added API endpoint `POST /query/explain-sql`.
-   - *UI*: Added "Explain Plan" inspection button to `SqlViewer.tsx` opening an interactive `ExplainPlanModal.tsx` modal with visual execution node breakdown, table scan vs index lookup detection, raw output copy, and timing metrics.
-3. **Exporting Capabilities** ✅ *(Completed)*:
-   - *Implemented*: Added CSV download with timestamping, formatted JSON export (`exportJSON`), and "Copy as Markdown Table" (`copyMarkdown`) directly in `ResultsTable.tsx`.
-4. **Dynamic Pagination & Large Result Set Streaming**:
-   - *Current*: Limit hard-capped to 200 rows by AST guardrail.
-   - *Improvement*: Configurable row limits with backend pagination (`LIMIT / OFFSET` or cursor) and table virtual scrolling for smooth rendering of 1,000+ rows.
-
----
-
-### C. Frontend & UI/UX Experience
-1. **Rich Interactive Charts (Chart.js / Recharts / ECharts)**:
-   - *Current*: `Visualizer.tsx` uses custom SVG/HTML div bars and donuts with limited interactions (no tooltips, no zoom, limited axis formatting).
-   - *Improvement*: Replace or enhance with a robust visual library (like Recharts or Lucide-backed Chart components) supporting hover tooltips, multiple series, area charts, line charts, and auto-aggregation.
-2. **SQL Syntax Highlighting & Code Editor** ✅ *(Completed)*:
-   - *Implemented*: Syntax token highlighting with line numbering, inline editing textarea with Reset & Run actions, and one-click "Format SQL" with keyword casing and indentation (`SqlViewer.tsx`).
-3. **Schema Diagram / ERD Visualizer** ✅ *(Completed)*:
-   - *Implemented*: Interactive `ErdModal.tsx` displaying Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations with interactive search and chip navigation.
-4. **Theme Toggle (Cohere Warm Canvas vs. Dark Mode)** ✅ *(Completed)*:
-   - *Implemented*: Instant theme toggle button in `Navbar.tsx` (with `<Sun>` and `<Moon>` icons), localStorage persistence (`tosql_theme_preference_v1`), OS preference fallback (`prefers-color-scheme`), root `data-theme="dark"` attribute, and complete design-token harmonization across all 17 UI components.
-
----
-
-### D. Codebase Health, Testing & Production Readiness
-1. **Backend Integration & Unit Tests** ✅ *(Completed)*:
-   - *Implemented*: Pytest test suite covering AST security guardrails, self-healing fallbacks, schema introspection, explain query plans, and edge-case prompt handling (`test_explain_plan.py`, `test_security.py`, `test_introspector.py`, `test_llm_pipeline.py`, `test_user_prompts.py`).
-2. **Connection Pooling & Multi-User Isolation**:
-   - *Current*: Global `current_db` dictionary in `routes_database.py`. If two users connect to different databases simultaneously, they overwrite each other's session.
-   - *Improvement*: Session-aware connection management (e.g. Session ID or Header-based workspace isolation).
-
----
-
-## 2. Proposed Prioritized Implementation Roadmap
-
-### Phase 1: High-Value Usability & Productivity ✅ *(Completed)*
-- **1.1 Persistent Query History & Favorites** ✅ *(Completed)*:
-  - Stored history across sessions via LocalStorage in frontend.
-  - Added "History & Saved Queries" modal to re-run, filter, star, or inspect prior queries (`HistoryModal.tsx`).
-- **1.2 SQL Formatter & Enhanced Editor** ✅ *(Completed)*:
-  - Added format SQL button with auto-indent & uppercase keywords (`sqlFormatter.ts`).
-  - Copy to clipboard with toast notification and editable SQL runner.
-- **1.3 Advanced Export Options** ✅ *(Completed)*:
-  - Export to JSON and CSV with custom filename timestamping.
-  - One-click copy table to Markdown table format.
-
-### Phase 2: AI Intelligence & Conversational Flow
-- **2.1 Conversational / Follow-up Prompting** ✅ *(Completed)*:
-  - Passed active query context (`previous_sql`, `previous_prompt`, `user_refinement`) through API endpoints, engine, and LLM prompt builder.
-  - Added Follow-Up Mode UI badge, one-click "New Thread" reset, and quick refinement chips in `PromptSection.tsx`.
-  - Added full test coverage in `test_llm_pipeline.py`.
-- **2.2 Structured Query Explanation** ✅ *(Completed)*:
-  - Added structured breakdown model (`QueryBreakdown`) in `schemas.py` capturing `tables_used`, `joins`, `filters`, `aggregations`, and `assumptions`.
-  - Added prompt instructions and fallback AST extractor in `self_healer.py`.
-  - Rendered structured tag grid in `ExplanationCard.tsx` with themed badges for referenced tables, join conditions, applied filters, and aggregations.
-  - Added test verification in `test_llm_pipeline.py`.
-- **2.3 Few-Shot Examples & Custom Semantic Dictionaries** ✅ *(Completed)*:
-   - Added `GlossaryTerm`, `FewShotExample`, and `DictionaryConfig` schema definitions and integrated with query generation requests.
-   - Enhanced `prompt_builder.py` with dynamic glossary business logic rules and few-shot query reference injection.
-   - Added backend REST endpoints `GET /api/database/dictionary` and `POST /api/database/dictionary`.
-   - Implemented `DictionaryModal.tsx` dual-tab management UI, synced with localStorage and backend, with a badge counter in `Navbar.tsx` and 1-click test button.
-   - Added comprehensive pytest suite in `backend/tests/test_semantic_dictionary.py`.
-- **2.4 Schema Pruning & Token Optimization** ✅ *(Completed)*:
-   - Created `SchemaPruner` (`schema_pruner.py`) scoring tables, columns, sample values, and glossary terms.
-   - Implemented BFS foreign key graph bridge discovery to retain intermediate join tables (e.g. `order_items`).
-   - Integrated into `DatabaseIntrospector.get_pruned_markdown_schema` and `TextToSQLEngine.process_natural_language_query`.
-   - Added `PruningMetadata` reporting in `QueryResponse` and interactive UI badge with popover in `ExplanationCard.tsx`.
-   - Added test suite in `backend/tests/test_schema_pruning.py`.
-
-### Phase 3: Visual Analytics & Schema Exploration
-- **3.1 Enhanced Interactive Visualizer**:
-  - Rich tooltips, formatted currencies/numbers, responsive chart layout.
-- **3.2 Database Relationship Graph / Schema Overview (ERD)** ✅ *(Completed)*:
-  - Created `ErdModal.tsx` displaying interactive Entity Relationship Diagram mapping tables, column datatypes, primary keys, and foreign key relations.
-  - Added filterable search and interactive foreign-key chip navigation.
-  - Linked "Schema ERD" actions directly into `Navbar.tsx` and `SchemaSidebar.tsx`.
-- **3.3 Enterprise Dark Mode & Theme Toggle System** ✅ *(Completed)*:
-  - Full design tokens mapping in `index.css` (`[data-theme="dark"]`) following Cohere's 2026 design specifications.
-  - Seamless toggle button in `Navbar.tsx` (`Sun`/`Moon`), local storage persistence, and OS auto-detection in `App.tsx`.
-  - Comprehensive adaptation of all 17 UI components removing all hardcoded `#ffffff` backgrounds and illegible contrast states.
-
+1. **Resolve Lint & React Compiler Warnings**:
+   - Fix 6 oxlint warnings: Fast refresh compliance in [SqlCodeBlock.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/SqlCodeBlock.tsx), synchronous `setState` inside `useEffect`, and missing hook dependencies.
+2. **Decompose Monolithic [App.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/App.tsx) (867 lines)**:
+   - Extract stateful domain logic into dedicated custom hooks in `src/hooks/`:
+     - `useTheme`: Manages light/dark mode preference and `data-theme` DOM attribute.
+     - `useQueryHistory`: Manages query history, favorites, and `localStorage` syncing.
+     - `useDatabaseState`: Manages schema loading, database connection, table preview, and active DB state.
+     - `useQueryRunner`: Manages prompt input, natural language generation, direct SQL execution, pipeline steps, and explain plan modal integration.
+3. **Expand Component Test Coverage**:
+   - Create test suites satisfying [AGENTS.md](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/AGENTS.md) guidelines for core missing components:
+     - `PromptSection.test.tsx`
+     - `ResultsTable.test.tsx`
+     - `ExplanationCard.test.tsx`
+4. **Clean Code & Styling Hygiene**:
+   - Eliminate duplicated logic and ensure styling adheres to CSS variable design tokens (`--bg-card`, `--cohere-*`).
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> Which phase or features would you like to prioritize first?
-> 1. **Option A (Comprehensive UI & Workflow)**: Query History & Favorites drawer + SQL Formatting + Multiple Export formats (JSON/Markdown) + Enhanced Charts.
-> 2. **Option B (AI Conversational & Self-Healing)**: Multi-turn prompt follow-ups ("filter by X", "group by month instead") + Structured query breakdown.
-> 3. **Option C (Full Stack Bundle)**: Implement both Phase 1 and Phase 2 iteratively.
+> - Custom hooks will be introduced under `frontend/src/hooks/`. Existing props on UI components will remain unchanged, preserving backward compatibility and stability.
+> - The helper function `highlightSql` currently in [SqlCodeBlock.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/SqlCodeBlock.tsx) will be extracted to a new utility file `src/utils/sqlHighlighter.ts` to satisfy Vite/React Fast Refresh constraints.
 
-Please provide your preference or any additional specific feature you would like included.
+---
+
+## Proposed Changes
+
+### Phase 1: Lint & Fast Refresh Fixes
+
+#### [NEW] [sqlHighlighter.ts](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/utils/sqlHighlighter.ts)
+- Move `highlightSql` out of `SqlCodeBlock.tsx` into a dedicated utility.
+
+#### [MODIFY] [SqlCodeBlock.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/SqlCodeBlock.tsx)
+- Re-export or import `highlightSql` from `src/utils/sqlHighlighter.ts`.
+- Component file will only export React components (`SqlCodeBlock`).
+
+#### [MODIFY] [SqlViewer.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/SqlViewer.tsx)
+- Avoid synchronous `setState` in `useEffect` when `sql` prop changes; handle synchronization cleanly or derive state.
+
+#### [MODIFY] [SettingsModal.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/SettingsModal.tsx)
+- Initialize/reset form state upon modal open cleanly without triggering cascading renders.
+
+#### [MODIFY] [ConnectionModal.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/ConnectionModal.tsx)
+- Streamline modal open state synchronization.
+
+---
+
+### Phase 2: App.tsx Decomposition into Custom Hooks
+
+#### [NEW] [useTheme.ts](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/hooks/useTheme.ts)
+- Encapsulates dark/light mode state, system preference media query, `localStorage` persistence, and HTML attribute setting.
+
+#### [NEW] [useQueryHistory.ts](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/hooks/useQueryHistory.ts)
+- Encapsulates `HistoryItem[]`, `addHistoryItem`, `toggleFavorite`, `clearHistory`, and `localStorage` synchronization.
+
+#### [NEW] [useDatabaseState.ts](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/hooks/useDatabaseState.ts)
+- Encapsulates `dbInfo`, schema loading, table preview data fetching, database switching, and dictionary modal interactions.
+
+#### [MODIFY] [App.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/App.tsx)
+- Integrate extracted hooks, reducing `App.tsx` from ~870 lines to ~350 lines focused primarily on layout and modal wiring.
+- Correct missing `aiSettings` dependency in `useEffect`.
+
+---
+
+### Phase 3: Unit Testing Core Components ([AGENTS.md](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/AGENTS.md) Compliance)
+
+#### [NEW] [PromptSection.test.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/PromptSection.test.tsx)
+- Test rendering with and without sample queries.
+- Test textarea input and change events.
+- Test Generate SQL button behavior when disabled (`isLoading={true}`, empty prompt).
+- Test sample query chip selection filling the prompt.
+
+#### [NEW] [ResultsTable.test.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/ResultsTable.test.tsx)
+- Test empty / null state.
+- Test table headers and row rendering with tabular data.
+- Test CSV and JSON export button clicks.
+- Test sorting and search/filter functionality within results.
+
+#### [NEW] [ExplanationCard.test.tsx](file:///c:/Users/hepisha/OneDrive/Desktop/darshak/toSQL/frontend/src/components/ExplanationCard.test.tsx)
+- Test empty state (returns `null` when no explanation exists).
+- Test rendering query explanation, assumptions, and complexity badge.
+- Test copy and explain plan action triggers.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+Execute in `frontend/`:
+1. `npm run lint` (verify 0 errors and 0 warnings)
+2. `npx tsc --noEmit` (verify clean type check)
+3. `npx vitest run` (verify all existing and new component tests pass)
+4. `npm run test:coverage` (verify >80% coverage on tested modules)
+
+### Manual Verification
+1. Verify dark/light mode toggle functions smoothly without page reload.
+2. Verify executing queries updates history and displays result tables.
+3. Open modals (Connection, Settings, ERD, Explain Plan, Dictionary) to ensure no state regressions.

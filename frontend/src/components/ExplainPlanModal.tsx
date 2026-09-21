@@ -12,7 +12,7 @@ import {
   Database01,
   LayersThree01
 } from './Icons';
-import { highlightSql } from './SqlCodeBlock';
+import { highlightSql } from '../utils/sqlHighlighter';
 
 interface ExplainPlanModalProps {
   isOpen: boolean;

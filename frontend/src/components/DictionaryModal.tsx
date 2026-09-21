@@ -10,7 +10,7 @@ import {
   XClose, 
   Terminal,
 } from './Icons';
-import { highlightSql } from './SqlCodeBlock';
+import { highlightSql } from '../utils/sqlHighlighter';
 
 interface DictionaryModalProps {
   isOpen: boolean;

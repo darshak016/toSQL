@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Terminal, 
   Play, 
@@ -12,7 +12,7 @@ import {
 
 import { formatSql } from '../utils/sqlFormatter';
 
-import { highlightSql } from './SqlCodeBlock';
+import { highlightSql } from '../utils/sqlHighlighter';
 
 interface SqlViewerProps {
   sql: string;
@@ -32,11 +32,15 @@ export default function SqlViewer({
   isExplaining
 }: SqlViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [prevSql, setPrevSql] = useState(sql);
   const [editableSql, setEditableSql] = useState(sql || '');
   const [copied, setCopied] = useState(false);
   const [formattedToast, setFormattedToast] = useState(false);
 
-  useEffect(() => { setEditableSql(sql || ''); }, [sql]);
+  if (sql !== prevSql) {
+    setPrevSql(sql);
+    setEditableSql(sql || '');
+  }
 
   const handleRun = () => {
     if (onExecuteSql && editableSql.trim()) {
