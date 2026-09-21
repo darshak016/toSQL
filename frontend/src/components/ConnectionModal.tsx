@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Database01, Check, XClose } from './Icons';
+import { Database01, Check, XClose, AlertCircle } from './Icons';
 
 interface ConnectionModalProps {
   isOpen: boolean;
@@ -7,6 +7,8 @@ interface ConnectionModalProps {
   currentDbUrl?: string;
   onConnect: (dbUrl: string, useSample: boolean) => void;
   isLoading: boolean;
+  connectionError?: string | null;
+  onClearError?: () => void;
 }
 
 export default function ConnectionModal({ 
@@ -14,9 +16,17 @@ export default function ConnectionModal({
   onClose, 
   currentDbUrl, 
   onConnect,
-  isLoading 
+  isLoading,
+  connectionError,
+  onClearError
 }: ConnectionModalProps) {
   const [customUrl, setCustomUrl] = useState(currentDbUrl || '');
+
+  useEffect(() => {
+    if (isOpen) {
+      setCustomUrl(currentDbUrl || '');
+    }
+  }, [isOpen, currentDbUrl]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -34,6 +44,13 @@ export default function ConnectionModal({
     let finalUrl = customUrl.trim();
     if (finalUrl.startsWith('postgres://')) finalUrl = finalUrl.replace('postgres://', 'postgresql://');
     onConnect(finalUrl, false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomUrl(e.target.value);
+    if (connectionError && onClearError) {
+      onClearError();
+    }
   };
 
   return (
@@ -112,6 +129,50 @@ export default function ConnectionModal({
 
         {/* Modal Body */}
         <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Connection Error Banner */}
+          {connectionError && (
+            <div
+              role="alert"
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '0.625rem',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--cohere-error-bg)',
+                border: '1px solid var(--cohere-error-border)',
+                color: 'var(--cohere-error)',
+              }}
+            >
+              <AlertCircle style={{ width: '1.1rem', height: '1.1rem', flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 600 }}>Connection Failed</span>
+                <span style={{ fontSize: '0.74rem', lineHeight: 1.4, wordBreak: 'break-word' }}>
+                  {connectionError}
+                </span>
+              </div>
+              {onClearError && (
+                <button
+                  type="button"
+                  onClick={onClearError}
+                  aria-label="Dismiss connection error"
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    color: 'var(--cohere-error)',
+                    opacity: 0.8,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <XClose style={{ width: '0.9rem', height: '0.9rem' }} />
+                </button>
+              )}
+            </div>
+          )}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <label htmlFor="database-uri-input" style={{
               fontFamily: 'var(--font-mono)',
@@ -129,21 +190,21 @@ export default function ConnectionModal({
               aria-label="Database Connection URL"
               placeholder="postgresql://user:password@host:5432/dbname or sqlite:///path/to/db.sqlite"
               value={customUrl}
-              onChange={e => setCustomUrl(e.target.value)}
+              onChange={handleInputChange}
               autoFocus
               style={{
                 width: '100%',
                 padding: '0.75rem 0.875rem',
                 borderRadius: 'var(--radius-xs)',
-                border: '1px solid var(--cohere-hairline)',
+                border: connectionError ? '1px solid var(--cohere-error-border)' : '1px solid var(--cohere-hairline)',
                 backgroundColor: 'var(--bg-input)',
                 color: 'var(--cohere-ink)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.8rem',
                 outline: 'none',
               }}
-              onFocus={e => e.target.style.borderColor = 'var(--cohere-primary)'}
-              onBlur={e => e.target.style.borderColor = 'var(--cohere-hairline)'}
+              onFocus={e => e.target.style.borderColor = connectionError ? 'var(--cohere-error)' : 'var(--cohere-primary)'}
+              onBlur={e => e.target.style.borderColor = connectionError ? 'var(--cohere-error-border)' : 'var(--cohere-hairline)'}
             />
             <div style={{ fontSize: '0.72rem', color: 'var(--cohere-muted)', lineHeight: 1.4 }}>
               Supports PostgreSQL, Supabase connection poolers, MySQL, and SQLite. You can also configure <code>DATABASE_URL</code> in <code>backend/.env</code>.

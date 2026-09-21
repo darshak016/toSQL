@@ -8,6 +8,7 @@ interface ErdModalProps {
   tables: TableInfo[];
   databaseType?: string;
   onPreviewTable?: (tableName: string) => void;
+  onOpenConnect?: () => void;
 }
 
 export default function ErdModal({
@@ -16,6 +17,7 @@ export default function ErdModal({
   tables = [],
   databaseType = 'SQLite',
   onPreviewTable,
+  onOpenConnect,
 }: ErdModalProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [filterText, setFilterText] = useState('');
@@ -254,14 +256,142 @@ export default function ErdModal({
           overflowY: 'auto',
           padding: '1.5rem 1.75rem',
           backgroundColor: 'var(--cohere-canvas)',
+          display: 'flex',
+          flexDirection: 'column',
         }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '1.25rem',
-            alignItems: 'start',
-          }}>
-            {filteredTables.map(tbl => {
+          {tables.length === 0 ? (
+            /* Zero Data State: No Database Connected */
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              padding: '3rem 1.5rem',
+              textAlign: 'center',
+              gap: '1rem',
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '3.5rem',
+                height: '3.5rem',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--cohere-hairline)',
+                color: 'var(--cohere-primary)',
+                boxShadow: 'var(--shadow-subtle)',
+              }}>
+                <Share04 style={{ width: '1.75rem', height: '1.75rem' }} />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', maxWidth: '380px' }}>
+                <h4 style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  color: 'var(--cohere-ink)',
+                  margin: 0,
+                }}>
+                  No Schema Graph Available
+                </h4>
+                <p style={{
+                  fontSize: '0.8rem',
+                  color: 'var(--cohere-muted)',
+                  lineHeight: 1.5,
+                  margin: 0,
+                }}>
+                  There is currently no active database connected. Connect a database to explore tables, columns, primary keys, and entity relationships.
+                </p>
+              </div>
+
+              {onOpenConnect && (
+                <button
+                  onClick={() => {
+                    onClose();
+                    onOpenConnect();
+                  }}
+                  className="btn-cohere-primary"
+                  style={{
+                    fontSize: '0.8rem',
+                    padding: '8px 16px',
+                    marginTop: '0.5rem',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    borderRadius: 'var(--radius-sm)',
+                  }}
+                >
+                  <Database01 style={{ width: '0.9rem', height: '0.9rem' }} />
+                  <span>Connect Database</span>
+                </button>
+              )}
+            </div>
+          ) : filteredTables.length === 0 ? (
+            /* Search Filter Empty State */
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              padding: '3rem 1.5rem',
+              textAlign: 'center',
+              gap: '0.75rem',
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '3rem',
+                height: '3rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--cohere-hairline)',
+                color: 'var(--cohere-muted)',
+              }}>
+                <SearchLg style={{ width: '1.3rem', height: '1.3rem' }} />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  color: 'var(--cohere-ink)',
+                }}>
+                  No matching tables or columns
+                </span>
+                <p style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--cohere-muted)',
+                  margin: 0,
+                }}>
+                  No tables or columns match &quot;{filterText}&quot;
+                </p>
+              </div>
+
+              <button
+                onClick={() => setFilterText('')}
+                className="btn-cohere-secondary"
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '5px 12px',
+                  marginTop: '0.25rem',
+                }}
+              >
+                Clear filter
+              </button>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.25rem',
+              alignItems: 'start',
+            }}>
+              {filteredTables.map(tbl => {
               const isSelected = selectedTable === tbl.name;
               const outgoingFks = (tbl.foreign_keys || []).filter(fk => fk.referred_table);
               const incomingFks = relationships.filter(rel => rel.toTable === tbl.name);
@@ -454,6 +584,7 @@ export default function ErdModal({
               );
             })}
           </div>
+          )}
         </div>
       </div>
     </div>

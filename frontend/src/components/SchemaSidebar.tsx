@@ -15,9 +15,10 @@ interface SchemaSidebarProps {
   tables: TableInfo[];
   onPreviewTable: (tableName: string) => void;
   onOpenErd?: () => void;
+  onOpenConnect?: () => void;
 }
 
-export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }: SchemaSidebarProps) {
+export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd, onOpenConnect }: SchemaSidebarProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedTables, setExpandedTables] = useState<Record<string, boolean>>({});
 
@@ -141,14 +142,121 @@ export default function SchemaSidebar({ tables = [], onPreviewTable, onOpenErd }
 
       {/* Tables List */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.625rem' }}>
-        {filteredTables.length === 0 ? (
+        {tables.length === 0 ? (
+          /* Zero Data State: No Database Connected */
           <div style={{
-            padding: '2rem 1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2.5rem 1rem',
             textAlign: 'center',
-            fontSize: '0.75rem',
-            color: 'var(--cohere-muted)',
+            height: '100%',
+            gap: '0.75rem',
           }}>
-            No tables matching &quot;{searchTerm}&quot;
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2.75rem',
+              height: '2.75rem',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--cohere-hairline)',
+              color: 'var(--cohere-muted)',
+              boxShadow: 'var(--shadow-subtle)',
+            }}>
+              <Database01 style={{ width: '1.25rem', height: '1.25rem' }} />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: 'var(--cohere-ink)',
+              }}>
+                No Database Connected
+              </span>
+              <p style={{
+                fontSize: '0.72rem',
+                color: 'var(--cohere-muted)',
+                lineHeight: 1.4,
+                margin: 0,
+                maxWidth: '200px',
+              }}>
+                Connect your database to inspect schema tables and generate SQL.
+              </p>
+            </div>
+
+            {onOpenConnect && (
+              <button
+                onClick={onOpenConnect}
+                className="btn-cohere-primary"
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '6px 12px',
+                  marginTop: '0.25rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
+                <Database01 style={{ width: '0.75rem', height: '0.75rem' }} />
+                <span>Connect Database</span>
+              </button>
+            )}
+          </div>
+        ) : filteredTables.length === 0 ? (
+          /* Search Empty State: Filtered Out */
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2.5rem 1rem',
+            textAlign: 'center',
+            gap: '0.5rem',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2.25rem',
+              height: '2.25rem',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--cohere-hairline)',
+              color: 'var(--cohere-muted)',
+            }}>
+              <SearchLg style={{ width: '1rem', height: '1rem' }} />
+            </div>
+            <span style={{
+              fontSize: '0.8rem',
+              fontWeight: 500,
+              color: 'var(--cohere-ink)',
+            }}>
+              No matching tables
+            </span>
+            <p style={{
+              fontSize: '0.72rem',
+              color: 'var(--cohere-muted)',
+              margin: 0,
+            }}>
+              No tables or columns match &quot;{searchTerm}&quot;
+            </p>
+            <button
+              onClick={() => setSearchTerm('')}
+              className="btn-cohere-secondary"
+              style={{
+                fontSize: '0.7rem',
+                padding: '3px 8px',
+                marginTop: '0.25rem',
+              }}
+            >
+              Clear filter
+            </button>
           </div>
         ) : (
           filteredTables.map((tbl) => {

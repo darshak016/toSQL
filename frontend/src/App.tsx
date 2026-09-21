@@ -110,6 +110,7 @@ export default function App() {
   // Modals & Settings
   const [isConnectOpen, setIsConnectOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectError, setConnectError] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isErdOpen, setIsErdOpen] = useState(false);
   const [isExplainOpen, setIsExplainOpen] = useState(false);
@@ -236,6 +237,7 @@ export default function App() {
   // Handle Switch Database
   const handleConnect = async (dbUrl: string, useSample: boolean) => {
     setIsConnecting(true);
+    setConnectError(null);
     try {
       const res = await connectDatabase(dbUrl, useSample);
       setDbInfo({
@@ -245,6 +247,7 @@ export default function App() {
         active_db_url: res.active_db_url
       });
       setIsConnectOpen(false);
+      setConnectError(null);
       setErrorBanner(null);
 
       // Refresh dynamic suggestion queries for the newly connected database
@@ -252,7 +255,7 @@ export default function App() {
         if (data?.samples) setSamples(data.samples);
       });
     } catch (err) {
-      alert(`Connection failed: ${(err as Error).message}`);
+      setConnectError((err as Error).message || "Failed to connect to database");
     } finally {
       setIsConnecting(false);
     }
@@ -486,6 +489,7 @@ export default function App() {
           tables={dbInfo?.tables || []}
           onPreviewTable={handlePreviewTable}
           onOpenErd={() => setIsErdOpen(true)}
+          onOpenConnect={() => setIsConnectOpen(true)}
         />
 
         {/* Central Content Area */}
@@ -778,10 +782,15 @@ export default function App() {
       {/* Database Connection Dialog */}
       <ConnectionModal
         isOpen={isConnectOpen}
-        onClose={() => setIsConnectOpen(false)}
+        onClose={() => {
+          setIsConnectOpen(false);
+          setConnectError(null);
+        }}
         currentDbUrl={dbInfo?.active_db_url}
         onConnect={handleConnect}
         isLoading={isConnecting}
+        connectionError={connectError}
+        onClearError={() => setConnectError(null)}
       />
 
       {/* AI Settings Dialog */}
@@ -824,6 +833,10 @@ export default function App() {
         onPreviewTable={(tbl) => {
           setIsErdOpen(false);
           handlePreviewTable(tbl);
+        }}
+        onOpenConnect={() => {
+          setIsErdOpen(false);
+          setIsConnectOpen(true);
         }}
       />
 
