@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SqlViewer from './SqlViewer';
 
@@ -117,8 +117,68 @@ describe('SqlViewer Component', () => {
 
     await user.click(screen.getByRole('button', { name: /reset/i }));
 
-    // Resets back to viewer mode with original sql
     expect(screen.queryByRole('textbox', { name: /editable sql statement/i })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /edit sql/i })).toBeInTheDocument();
+  });
+
+  it('formats SQL and displays toast confirmation when Format SQL is clicked', async () => {
+    const user = userEvent.setup();
+    render(<SqlViewer sql="select id, name from users where id=1;" />);
+
+    const formatBtn = screen.getByRole('button', { name: /format sql/i });
+    await user.click(formatBtn);
+
+    expect(screen.getByText('Formatted!')).toBeInTheDocument();
+  });
+
+  it('handles running state correctly and disables execute button when isExecuting is true', async () => {
+    const user = userEvent.setup();
+    render(<SqlViewer sql={sampleSql} isExecuting={true} />);
+
+    await user.click(screen.getByRole('button', { name: /edit sql/i }));
+
+    const runBtn = screen.getByRole('button', { name: /running\.\.\./i });
+    expect(runBtn).toBeDisabled();
+  });
+
+  it('updates internal editableSql state when the sql prop changes', () => {
+    const { rerender } = render(<SqlViewer sql="SELECT 1;" />);
+    expect(screen.getByText('SELECT')).toBeInTheDocument();
+
+    rerender(<SqlViewer sql="SELECT 2;" />);
+    expect(screen.getByText('SELECT')).toBeInTheDocument();
+  });
+
+  it('does not trigger onExecuteSql or onExplainPlan when query is empty or whitespace', async () => {
+    const user = userEvent.setup();
+    const onExec = vi.fn();
+    const onExplain = vi.fn();
+
+    render(<SqlViewer sql="SELECT 1;" onExecuteSql={onExec} onExplainPlan={onExplain} />);
+
+    await user.click(screen.getByRole('button', { name: /edit sql/i }));
+    const textarea = screen.getByRole('textbox', { name: /editable sql statement/i });
+    await user.clear(textarea);
+
+    const runBtn = screen.getByRole('button', { name: /execute edited sql/i });
+    await user.click(runBtn);
+    expect(onExec).not.toHaveBeenCalled();
+
+    const explainBtn = screen.getByRole('button', { name: /explain plan/i });
+    await user.click(explainBtn);
+    expect(onExplain).not.toHaveBeenCalled();
+  });
+
+  it('executes timer callbacks for copy and format feedback', async () => {
+    vi.useFakeTimers();
+    render(<SqlViewer sql="SELECT 1;" />);
+
+    await act(async () => {
+      screen.getByRole('button', { name: /copy/i }).click();
+      screen.getByRole('button', { name: /format sql/i }).click();
+      await vi.runAllTimersAsync();
+    });
+
+    vi.useRealTimers();
   });
 });

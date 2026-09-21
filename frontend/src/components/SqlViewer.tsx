@@ -38,9 +38,22 @@ export default function SqlViewer({
 
   useEffect(() => { setEditableSql(sql || ''); }, [sql]);
 
-  const handleRun = () => { if (onExecuteSql && editableSql.trim()) onExecuteSql(editableSql); };
-  const handleReset = () => { setEditableSql(sql || ''); setIsEditing(false); };
-  const handleExplain = () => { if (onExplainPlan && editableSql.trim()) onExplainPlan(editableSql); };
+  const handleRun = () => {
+    if (onExecuteSql && editableSql.trim()) {
+      onExecuteSql(editableSql);
+    }
+  };
+
+  const handleReset = () => {
+    setEditableSql(sql);
+    setIsEditing(false);
+  };
+
+  const handleExplain = () => {
+    if (onExplainPlan && editableSql.trim()) {
+      onExplainPlan(editableSql);
+    }
+  };
   const handleCopy = () => {
 
     navigator.clipboard.writeText(editableSql);

@@ -497,8 +497,8 @@ export default function App() {
               alignItems: 'center',
               justifyContent: 'space-between',
               borderRadius: 'var(--radius-sm)',
-              border: '1px solid #fecaca',
-              backgroundColor: '#fef2f2',
+              border: '1px solid var(--cohere-error-border)',
+              backgroundColor: 'var(--cohere-error-bg)',
               padding: '0.75rem 1.25rem',
               flexShrink: 0,
             }}>
