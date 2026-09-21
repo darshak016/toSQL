@@ -305,38 +305,15 @@ export default function PromptSection({
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0.625rem 1rem',
-          borderTop: '1px solid var(--cohere-hairline)',
-          backgroundColor: 'var(--bg-card)',
+          justifyContent: 'flex-end',
+          padding: '0.5rem 0.875rem 0.75rem',
         }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.7rem',
-            color: 'var(--cohere-muted)',
-          }}>
-            <span style={{
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--cohere-hairline)',
-              backgroundColor: 'var(--cohere-soft-stone)',
-              padding: '1px 5px',
-              color: 'var(--cohere-ink)',
-              fontWeight: 600,
-            }}>
-              Return ↵
-            </span>
-            <span>to generate &amp; execute query</span>
-          </div>
-
           <button
             onClick={onGenerate}
             disabled={!prompt.trim() || isLoading}
             className="btn-cohere-primary"
             style={{
-              padding: '6px 18px',
+              padding: '7px 18px',
               fontSize: '12px',
               fontWeight: 600,
             }}

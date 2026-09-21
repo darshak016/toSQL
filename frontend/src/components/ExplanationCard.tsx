@@ -227,9 +227,9 @@ export default function ExplanationCard({
       {hasBreakdown && (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '0.75rem',
-          padding: '0.875rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1rem',
+          padding: '1rem',
           borderRadius: 'var(--radius-xs)',
           backgroundColor: 'var(--cohere-soft-stone)',
           border: '1px solid var(--cohere-hairline)',
@@ -237,7 +237,7 @@ export default function ExplanationCard({
         }}>
           {/* Tables Used */}
           {breakdown.tables_used && breakdown.tables_used.length > 0 && (
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.65rem',
@@ -245,11 +245,11 @@ export default function ExplanationCard({
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 color: 'var(--cohere-muted)',
-                marginBottom: '0.35rem',
+                marginBottom: '0.5rem',
               }}>
                 Tables Referenced
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                 {breakdown.tables_used.map((tbl, i) => (
                   <span
                     key={i}
@@ -257,11 +257,13 @@ export default function ExplanationCard({
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.7rem',
                       fontWeight: 600,
-                      padding: '2px 6px',
+                      padding: '4px 8px',
                       borderRadius: 'var(--radius-xs)',
                       backgroundColor: 'var(--cohere-pale-blue)',
                       color: 'var(--cohere-action-blue)',
                       border: '1px solid var(--cohere-hairline)',
+                      wordBreak: 'break-word',
+                      lineHeight: 1.4,
                     }}
                   >
                     {tbl}
@@ -273,7 +275,7 @@ export default function ExplanationCard({
 
           {/* Join Conditions */}
           {breakdown.joins && breakdown.joins.length > 0 && (
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.65rem',
@@ -281,22 +283,26 @@ export default function ExplanationCard({
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 color: 'var(--cohere-muted)',
-                marginBottom: '0.35rem',
+                marginBottom: '0.5rem',
               }}>
                 Joins &amp; Relations
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {breakdown.joins.map((jn, i) => (
                   <span
                     key={i}
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.68rem',
-                      padding: '2px 6px',
+                      padding: '5px 8px',
                       borderRadius: 'var(--radius-xs)',
                       backgroundColor: 'var(--cohere-purple-bg)',
                       color: 'var(--cohere-purple-text)',
                       border: '1px solid var(--cohere-purple-border)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      lineHeight: 1.4,
+                      display: 'inline-block',
                     }}
                   >
                     {jn}
@@ -308,7 +314,7 @@ export default function ExplanationCard({
 
           {/* Applied Filters */}
           {breakdown.filters && breakdown.filters.length > 0 && (
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.65rem',
@@ -316,22 +322,26 @@ export default function ExplanationCard({
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 color: 'var(--cohere-muted)',
-                marginBottom: '0.35rem',
+                marginBottom: '0.5rem',
               }}>
                 Applied Filters
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {breakdown.filters.map((flt, i) => (
                   <span
                     key={i}
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.68rem',
-                      padding: '2px 6px',
+                      padding: '5px 8px',
                       borderRadius: 'var(--radius-xs)',
                       backgroundColor: 'var(--cohere-amber-bg)',
                       color: 'var(--cohere-amber-text)',
                       border: '1px solid var(--cohere-amber-border)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      lineHeight: 1.4,
+                      display: 'inline-block',
                     }}
                   >
                     {flt}
@@ -343,7 +353,7 @@ export default function ExplanationCard({
 
           {/* Aggregations */}
           {breakdown.aggregations && breakdown.aggregations.length > 0 && (
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.65rem',
@@ -351,22 +361,26 @@ export default function ExplanationCard({
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 color: 'var(--cohere-muted)',
-                marginBottom: '0.35rem',
+                marginBottom: '0.5rem',
               }}>
                 Aggregations
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {breakdown.aggregations.map((agg, i) => (
                   <span
                     key={i}
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.68rem',
-                      padding: '2px 6px',
+                      padding: '5px 8px',
                       borderRadius: 'var(--radius-xs)',
                       backgroundColor: 'var(--cohere-pale-green)',
                       color: 'var(--cohere-deep-green)',
                       border: '1px solid var(--cohere-success-border)',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                      lineHeight: 1.4,
+                      display: 'inline-block',
                     }}
                   >
                     {agg}
