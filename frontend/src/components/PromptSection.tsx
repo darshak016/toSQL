@@ -194,10 +194,10 @@ export default function PromptSection({
           {(followUpSuggestions.length > 0
             ? followUpSuggestions.map(s => ({ label: s.label, val: s.prompt }))
             : [
-                { label: 'Only top 3', val: 'Only show the top 3' },
-                { label: 'Sort lowest first', val: 'Sort ascending (lowest first)' },
-                { label: 'Filter condition', val: 'Filter these results further' },
-              ]
+              { label: 'Only top 3', val: 'Only show the top 3' },
+              { label: 'Sort lowest first', val: 'Sort ascending (lowest first)' },
+              { label: 'Filter condition', val: 'Filter these results further' },
+            ]
           ).map((chip, idx) => (
             <button
               key={idx}
