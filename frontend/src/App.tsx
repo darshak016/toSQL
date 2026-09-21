@@ -214,7 +214,13 @@ export default function App() {
       setDbInfo(data);
       setErrorBanner(null);
     } catch (err) {
-      setErrorBanner(`Could not load schema: ${(err as Error).message}. Ensure backend is running.`);
+      const msg = (err as Error).message;
+      if (msg.includes("No database connected")) {
+        setDbInfo(null);
+        setErrorBanner("No database connected. Connect via the 'Connect DB' button or configure DATABASE_URL in your backend/.env.");
+      } else {
+        setErrorBanner(`Could not load schema: ${msg}. Ensure backend is running.`);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -224,7 +230,7 @@ export default function App() {
     loadSchema();
     fetchSampleQueries("", aiSettings).then(data => {
       if (data?.samples) setSamples(data.samples);
-    });
+    }).catch(() => {});
   }, []);
 
   // Handle Switch Database

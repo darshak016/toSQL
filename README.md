@@ -94,8 +94,7 @@ toSQL/
 │   │   │   ├── query_runner.py        # Safe execution, type serialization, & EXPLAIN plan analysis
 │   │   │   └── self_healer.py         # Autonomous retry & error-reflection loop
 │   │   ├── samples/
-│   │   │   ├── seed_samples.py        # E-commerce sample database seeder
-│   │   │   └── ecommerce.db           # Bundled SQLite database
+│   │   │   └── seed_samples.py        # E-commerce sample database seeder (for testing)
 │   │   └── main.py                    # FastAPI server entrypoint
 │   ├── tests/                         # Pytest test suite (security, introspection, query runner)
 │   └── requirements.txt

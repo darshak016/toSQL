@@ -138,24 +138,45 @@ export default function Navbar({
             borderColor: 'transparent',
             color: 'var(--cohere-ink)',
           }}
-          title="Click to switch database connection"
+          title={dbInfo ? "Click to switch database connection" : "Click to connect database"}
         >
-          <Database01 style={{ width: '0.85rem', height: '0.85rem', color: 'var(--cohere-deep-green)' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{dbType}</span>
-          <span style={{ color: 'var(--cohere-muted)' }}>•</span>
-          <span>{tableCount} tables</span>
-          <span style={{
-            fontSize: '10px',
-            fontFamily: 'var(--font-mono)',
-            textTransform: 'uppercase',
-            backgroundColor: 'rgba(23,23,28,0.08)',
-            padding: '1px 6px',
-            borderRadius: 'var(--radius-xs)',
-            fontWeight: 600,
-            marginLeft: '4px',
-          }}>
-            Switch
-          </span>
+          <Database01 style={{ width: '0.85rem', height: '0.85rem', color: dbInfo ? 'var(--cohere-deep-green)' : 'var(--cohere-muted)' }} />
+          {dbInfo ? (
+            <>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{dbType}</span>
+              <span style={{ color: 'var(--cohere-muted)' }}>•</span>
+              <span>{tableCount} tables</span>
+              <span style={{
+                fontSize: '10px',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
+                backgroundColor: 'rgba(23,23,28,0.08)',
+                padding: '1px 6px',
+                borderRadius: 'var(--radius-xs)',
+                fontWeight: 600,
+                marginLeft: '4px',
+              }}>
+                Switch
+              </span>
+            </>
+          ) : (
+            <>
+              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--cohere-muted)' }}>No DB</span>
+              <span style={{
+                fontSize: '10px',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
+                backgroundColor: 'var(--cohere-coral)',
+                color: 'var(--cohere-canvas)',
+                padding: '1px 6px',
+                borderRadius: 'var(--radius-xs)',
+                fontWeight: 600,
+                marginLeft: '4px',
+              }}>
+                Connect
+              </span>
+            </>
+          )}
         </button>
       </div>
 

@@ -16,10 +16,7 @@ export default function ConnectionModal({
   onConnect,
   isLoading 
 }: ConnectionModalProps) {
-  const [selectedType, setSelectedType] = useState('supabase');
-  const [customUrl, setCustomUrl] = useState(
-    currentDbUrl && !currentDbUrl.includes('ecommerce.db') ? currentDbUrl : ''
-  );
+  const [customUrl, setCustomUrl] = useState(currentDbUrl || '');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -34,13 +31,9 @@ export default function ConnectionModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedType === 'sample') {
-      onConnect('', true);
-    } else {
-      let finalUrl = customUrl.trim();
-      if (finalUrl.startsWith('postgres://')) finalUrl = finalUrl.replace('postgres://', 'postgresql://');
-      onConnect(finalUrl, false);
-    }
+    let finalUrl = customUrl.trim();
+    if (finalUrl.startsWith('postgres://')) finalUrl = finalUrl.replace('postgres://', 'postgresql://');
+    onConnect(finalUrl, false);
   };
 
   return (
@@ -56,7 +49,7 @@ export default function ConnectionModal({
           border: '1px solid var(--cohere-hairline)',
           boxShadow: 'var(--shadow-modal)',
           width: '100%',
-          maxWidth: '480px',
+          maxWidth: '520px',
           overflow: 'hidden',
         }}
       >
@@ -92,7 +85,7 @@ export default function ConnectionModal({
                 Database Connection
               </h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--cohere-muted)' }}>
-                Connect SQLite demo instance or Supabase PostgreSQL
+                Connect to PostgreSQL, Supabase, MySQL, or SQLite
               </p>
             </div>
           </div>
@@ -118,120 +111,44 @@ export default function ConnectionModal({
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Options */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-            {/* Supabase option */}
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setSelectedType('supabase')}
-              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedType('supabase'); } }}
+        <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label htmlFor="database-uri-input" style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              color: 'var(--cohere-ink)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em'
+            }}>
+              Database Connection URL / URI
+            </label>
+            <input
+              id="database-uri-input"
+              type="text"
+              aria-label="Database Connection URL"
+              placeholder="postgresql://user:password@host:5432/dbname or sqlite:///path/to/db.sqlite"
+              value={customUrl}
+              onChange={e => setCustomUrl(e.target.value)}
+              autoFocus
               style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.75rem',
-                padding: '0.875rem 1rem',
-                borderRadius: 'var(--radius-sm)',
-                border: selectedType === 'supabase' ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
-                backgroundColor: selectedType === 'supabase' ? 'var(--cohere-pale-green)' : 'var(--bg-card)',
-                cursor: 'pointer',
+                width: '100%',
+                padding: '0.75rem 0.875rem',
+                borderRadius: 'var(--radius-xs)',
+                border: '1px solid var(--cohere-hairline)',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--cohere-ink)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.8rem',
+                outline: 'none',
               }}
-            >
-              <input
-                type="radio"
-                name="dbType"
-                id="radio-supabase"
-                aria-label="Supabase / PostgreSQL database"
-                checked={selectedType === 'supabase'}
-                onChange={() => setSelectedType('supabase')}
-                style={{ marginTop: '0.2rem', accentColor: 'var(--cohere-primary)' }}
-              />
-              <div>
-                <label htmlFor="radio-supabase" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)', cursor: 'pointer' }}>
-                  Supabase / PostgreSQL
-                </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--cohere-muted)' }}>
-                  Production database with real schemas and SSL pooling
-                </div>
-              </div>
-            </div>
-
-            {/* Sample SQLite option */}
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={() => setSelectedType('sample')}
-              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setSelectedType('sample'); } }}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.75rem',
-                padding: '0.875rem 1rem',
-                borderRadius: 'var(--radius-sm)',
-                border: selectedType === 'sample' ? '2px solid var(--cohere-primary)' : '1px solid var(--cohere-hairline)',
-                backgroundColor: selectedType === 'sample' ? 'var(--cohere-soft-stone)' : 'var(--bg-card)',
-                cursor: 'pointer',
-              }}
-            >
-              <input
-                type="radio"
-                name="dbType"
-                id="radio-sqlite"
-                aria-label="Local E-Commerce Demo SQLite database"
-                checked={selectedType === 'sample'}
-                onChange={() => setSelectedType('sample')}
-                style={{ marginTop: '0.2rem', accentColor: 'var(--cohere-primary)' }}
-              />
-              <div>
-                <label htmlFor="radio-sqlite" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--cohere-ink)', cursor: 'pointer' }}>
-                  Local E-Commerce Demo (SQLite)
-                </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--cohere-muted)' }}>
-                  Pre-seeded catalog, customers, orders, and order_items
-                </div>
-              </div>
+              onFocus={e => e.target.style.borderColor = 'var(--cohere-primary)'}
+              onBlur={e => e.target.style.borderColor = 'var(--cohere-hairline)'}
+            />
+            <div style={{ fontSize: '0.72rem', color: 'var(--cohere-muted)', lineHeight: 1.4 }}>
+              Supports PostgreSQL, Supabase connection poolers, MySQL, and SQLite. You can also configure <code>DATABASE_URL</code> in <code>backend/.env</code>.
             </div>
           </div>
-
-          {/* Connection URI Input (if Supabase selected) */}
-          {selectedType === 'supabase' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <label htmlFor="supabase-uri-input" style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                color: 'var(--cohere-ink)',
-                textTransform: 'uppercase',
-              }}>
-                PostgreSQL Connection URI
-              </label>
-              <input
-                id="supabase-uri-input"
-                type="password"
-                aria-label="PostgreSQL Connection URI"
-                placeholder="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres"
-                value={customUrl}
-                onChange={e => setCustomUrl(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.625rem 0.75rem',
-                  borderRadius: 'var(--radius-xs)',
-                  border: '1px solid var(--cohere-hairline)',
-                  backgroundColor: 'var(--bg-input)',
-                  color: 'var(--cohere-ink)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.78rem',
-                  outline: 'none',
-                }}
-                onFocus={e => e.target.style.borderColor = 'var(--cohere-primary)'}
-                onBlur={e => e.target.style.borderColor = 'var(--cohere-hairline)'}
-              />
-              <span style={{ fontSize: '0.7rem', color: 'var(--cohere-muted)' }}>
-                Supports Supabase session &amp; transaction connection poolers.
-              </span>
-            </div>
-          )}
 
           {/* Footer Actions */}
           <div style={{
@@ -252,7 +169,7 @@ export default function ConnectionModal({
             </button>
             <button
               type="submit"
-              disabled={isLoading || (selectedType === 'supabase' && !customUrl.trim())}
+              disabled={isLoading || !customUrl.trim()}
               className="btn-cohere-primary"
               style={{
                 display: 'inline-flex',
