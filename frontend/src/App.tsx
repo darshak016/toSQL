@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { 
-  DbInfo, 
   AiSettings, 
-
   QueryResult, 
-  PreviewData, 
-  SampleQuery, 
   ExplainPlanResponse,
   GlossaryTerm,
   FewShotExample
@@ -26,14 +22,10 @@ import ErdModal from './components/ErdModal';
 import ExplainPlanModal from './components/ExplainPlanModal';
 import DictionaryModal from './components/DictionaryModal';
 import { 
-  fetchSchema, 
-  connectDatabase, 
-  fetchSampleQueries, 
-  fetchTablePreview, 
   generateAndRunQuery, 
-  executeDirectSql,
-  fetchExplainPlan,
-  saveDatabaseDictionary
+  executeDirectSql, 
+  fetchExplainPlan, 
+  saveDatabaseDictionary 
 } from './services/api';
 
 
@@ -41,6 +33,8 @@ import { Table, BarChart03, AlertCircle, XClose } from './components/Icons';
 
 import { useTheme } from './hooks/useTheme';
 import { useQueryHistory } from './hooks/useQueryHistory';
+
+import { useDatabaseState } from './hooks/useDatabaseState';
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -60,17 +54,11 @@ export default function App() {
     }
   };
 
-  // DB & Schema State
-  const [dbInfo, setDbInfo] = useState<DbInfo | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [samples, setSamples] = useState<SampleQuery[]>([]);
-
   // Prompt & Query State
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExecutingSql, setIsExecutingSql] = useState(false);
   const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
-  const [errorBanner, setErrorBanner] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('table');
 
   // Pipeline Step Visualization State
@@ -78,19 +66,28 @@ export default function App() {
   const [pipelineVisible, setPipelineVisible] = useState(false);
   const stepTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Modals & Settings
-  const [isConnectOpen, setIsConnectOpen] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectError, setConnectError] = useState<string | null>(null);
+  // Modals & Inspection State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isErdOpen, setIsErdOpen] = useState(false);
   const [isExplainOpen, setIsExplainOpen] = useState(false);
   const [explainPlan, setExplainPlan] = useState<ExplainPlanResponse | null>(null);
   const [isExplainingPlan, setIsExplainingPlan] = useState(false);
   const [isDictionaryOpen, setIsDictionaryOpen] = useState(false);
-  const [previewTable, setPreviewTable] = useState<string | null>(null);
-  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
+  // AI Settings
+  const [aiSettings, setAiSettings] = useState<AiSettings>(() => {
+    try {
+      const saved = localStorage.getItem('tosql_ai_settings');
+      return saved ? JSON.parse(saved) : { provider: 'gemini', apiKey: '', modelName: 'gemini-2.5-flash' };
+    } catch {
+      return { provider: 'gemini', apiKey: '', modelName: 'gemini-2.5-flash' };
+    }
+  });
+
+  const saveAiSettings = (newSettings: AiSettings) => {
+    setAiSettings(newSettings);
+    localStorage.setItem('tosql_ai_settings', JSON.stringify(newSettings));
+  };
 
   // Semantic Glossary Terms & Few-Shot Examples (Plan 1.4 / A.4)
   const [glossaryTerms, setGlossaryTerms] = useState<GlossaryTerm[]>(() => {
@@ -161,118 +158,30 @@ export default function App() {
     }
   };
 
-
-
-  // AI Settings
-  const [aiSettings, setAiSettings] = useState<AiSettings>(() => {
-    try {
-      const saved = localStorage.getItem('tosql_ai_settings');
-      return saved ? JSON.parse(saved) : { provider: 'gemini', apiKey: '', modelName: 'gemini-2.5-flash' };
-    } catch {
-      return { provider: 'gemini', apiKey: '', modelName: 'gemini-2.5-flash' };
-    }
-  });
-
-  const saveAiSettings = (newSettings: AiSettings) => {
-    setAiSettings(newSettings);
-    localStorage.setItem('tosql_ai_settings', JSON.stringify(newSettings));
-  };
-
-  // Initial Load
-  const loadSchema = async () => {
-    setIsRefreshing(true);
-    try {
-      const data = await fetchSchema();
-      setDbInfo(data);
-      setErrorBanner(null);
-    } catch (err) {
-      const msg = (err as Error).message;
-      if (msg.includes("No database connected")) {
-        setDbInfo(null);
-        setErrorBanner("No database connected. Connect via the 'Connect DB' button or configure DATABASE_URL in your backend/.env.");
-      } else {
-        setErrorBanner(`Could not load schema: ${msg}. Ensure backend is running.`);
-      }
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
+  // Database State Hook
+  const {
+    dbInfo,
+    isRefreshing,
+    samples,
+    errorBanner,
+    setErrorBanner,
+    loadSchema,
+    isConnectOpen,
+    setIsConnectOpen,
+    isConnecting,
+    connectError,
+    setConnectError,
+    handleConnect,
+    previewTable,
+    previewData,
+    isLoadingPreview,
+    handlePreviewTable,
+    closePreview,
+  } = useDatabaseState(aiSettings);
 
   useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      setIsRefreshing(true);
-      try {
-        const data = await fetchSchema();
-        if (isMounted) {
-          setDbInfo(data);
-          setErrorBanner(null);
-        }
-      } catch (err) {
-        const msg = (err as Error).message;
-        if (isMounted) {
-          if (msg.includes("No database connected")) {
-            setDbInfo(null);
-            setErrorBanner("No database connected. Connect via the 'Connect DB' button or configure DATABASE_URL in your backend/.env.");
-          } else {
-            setErrorBanner(`Could not load schema: ${msg}. Ensure backend is running.`);
-          }
-        }
-      } finally {
-        if (isMounted) setIsRefreshing(false);
-      }
-    })();
-
-    fetchSampleQueries("", aiSettings).then(data => {
-      if (isMounted && data?.samples) setSamples(data.samples);
-    }).catch(() => {});
-
-    return () => {
-      isMounted = false;
-    };
-  }, [aiSettings]);
-
-  // Handle Switch Database
-  const handleConnect = async (dbUrl: string, useSample: boolean) => {
-    setIsConnecting(true);
-    setConnectError(null);
-    try {
-      const res = await connectDatabase(dbUrl, useSample);
-      setDbInfo({
-        database_type: res.database_type,
-        table_count: res.table_count,
-        tables: res.tables,
-        active_db_url: res.active_db_url
-      });
-      setIsConnectOpen(false);
-      setConnectError(null);
-      setErrorBanner(null);
-
-      // Refresh dynamic suggestion queries for the newly connected database
-      fetchSampleQueries(res.active_db_url, aiSettings).then(data => {
-        if (data?.samples) setSamples(data.samples);
-      });
-    } catch (err) {
-      setConnectError((err as Error).message || "Failed to connect to database");
-    } finally {
-      setIsConnecting(false);
-    }
-  };
-
-  // Handle Preview Table
-  const handlePreviewTable = async (tableName: string) => {
-    setPreviewTable(tableName);
-    setIsLoadingPreview(true);
-    try {
-      const data = await fetchTablePreview(tableName);
-      setPreviewData(data);
-    } catch (err) {
-      alert(`Could not preview table: ${(err as Error).message}`);
-      setPreviewTable(null);
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  };
+    loadSchema();
+  }, [loadSchema]);
 
 
   const handleSelectHistoryQuery = (selectedPrompt: string, selectedSql?: string) => {
@@ -766,10 +675,7 @@ export default function App() {
       {/* Table Sample Data Preview Dialog */}
       <TablePreviewModal
         isOpen={Boolean(previewTable)}
-        onClose={() => {
-          setPreviewTable(null);
-          setPreviewData(null);
-        }}
+        onClose={closePreview}
         tableName={previewTable}
         previewData={previewData}
         isLoading={isLoadingPreview}
