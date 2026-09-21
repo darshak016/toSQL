@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SampleQuery } from '../types';
+import type { SampleQuery, FollowUpSuggestion } from '../types';
 import { Send01 } from './Icons';
 
 interface PromptSectionProps {
@@ -8,6 +8,7 @@ interface PromptSectionProps {
   onGenerate: () => void;
   isLoading: boolean;
   samples?: SampleQuery[];
+  followUpSuggestions?: FollowUpSuggestion[];
   activeQuery?: {
     sql?: string;
     prompt?: string;
@@ -21,6 +22,7 @@ export default function PromptSection({
   onGenerate,
   isLoading,
   samples = [],
+  followUpSuggestions = [],
   activeQuery,
   onClearContext,
 }: PromptSectionProps) {
@@ -189,16 +191,19 @@ export default function PromptSection({
           }}>
             Quick Refine:
           </span>
-          {[
-            { label: 'Only top 3', val: 'Only show the top 3' },
-            { label: 'Filter to USA', val: 'Filter to only customers from the USA' },
-            { label: 'Sort lowest first', val: 'Sort ascending (lowest first)' },
-            { label: 'Add email column', val: 'Include the email column as well' },
-          ].map((chip, idx) => (
+          {(followUpSuggestions.length > 0
+            ? followUpSuggestions.map(s => ({ label: s.label, val: s.prompt }))
+            : [
+                { label: 'Only top 3', val: 'Only show the top 3' },
+                { label: 'Sort lowest first', val: 'Sort ascending (lowest first)' },
+                { label: 'Filter condition', val: 'Filter these results further' },
+              ]
+          ).map((chip, idx) => (
             <button
               key={idx}
               className="chip-cohere-taxonomy"
               onClick={() => setPrompt(chip.val)}
+              title={chip.val}
               style={{
                 fontSize: '11px',
                 padding: '3px 9px',
@@ -206,6 +211,7 @@ export default function PromptSection({
                 backgroundColor: prompt === chip.val ? 'var(--cohere-pale-blue)' : 'var(--cohere-soft-stone)',
                 color: prompt === chip.val ? 'var(--cohere-action-blue)' : 'var(--cohere-ink)',
                 fontWeight: prompt === chip.val ? 600 : 400,
+                whiteSpace: 'nowrap',
               }}
             >
               <span>{chip.label}</span>

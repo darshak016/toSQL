@@ -222,7 +222,7 @@ export default function App() {
 
   useEffect(() => {
     loadSchema();
-    fetchSampleQueries().then(data => {
+    fetchSampleQueries("", aiSettings).then(data => {
       if (data?.samples) setSamples(data.samples);
     });
   }, []);
@@ -240,6 +240,11 @@ export default function App() {
       });
       setIsConnectOpen(false);
       setErrorBanner(null);
+
+      // Refresh dynamic suggestion queries for the newly connected database
+      fetchSampleQueries(res.active_db_url, aiSettings).then(data => {
+        if (data?.samples) setSamples(data.samples);
+      });
     } catch (err) {
       alert(`Connection failed: ${(err as Error).message}`);
     } finally {
@@ -534,6 +539,7 @@ export default function App() {
               onGenerate={handleGenerate}
               isLoading={isLoading}
               samples={samples}
+              followUpSuggestions={queryResult?.follow_up_suggestions}
               activeQuery={queryResult?.sql ? { sql: queryResult.sql, prompt: queryResult.prompt } : null}
               onClearContext={() => {
                 setQueryResult(null);

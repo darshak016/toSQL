@@ -63,6 +63,11 @@ export interface QueryBreakdown {
   assumptions?: string[];
 }
 
+export interface FollowUpSuggestion {
+  label: string;
+  prompt: string;
+}
+
 export interface QueryResult {
   success: boolean;
   prompt?: string;
@@ -73,6 +78,7 @@ export interface QueryResult {
   self_healed?: boolean;
   suggested_chart?: string;
   chart_config?: ChartConfig;
+  follow_up_suggestions?: FollowUpSuggestion[];
   attempts?: QueryAttempt[];
   error?: string;
   schema_pruning?: PruningMetadata;

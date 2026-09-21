@@ -49,8 +49,19 @@ export async function fetchTablePreview(tableName: string, dbUrl = ""): Promise<
   return res.json();
 }
 
-export async function fetchSampleQueries(): Promise<{ samples: SampleQuery[] }> {
-  const res = await fetch(`${API_BASE}/database/sample-queries`);
+export async function fetchSampleQueries(
+  dbUrl = "",
+  aiSettings?: { provider?: string; apiKey?: string; modelName?: string }
+): Promise<{ samples: SampleQuery[] }> {
+  const params = new URLSearchParams();
+  if (dbUrl) params.append("db_url", dbUrl);
+  if (aiSettings?.apiKey) params.append("api_key", aiSettings.apiKey);
+  if (aiSettings?.provider) params.append("provider", aiSettings.provider);
+  if (aiSettings?.modelName) params.append("model_name", aiSettings.modelName);
+
+  const queryString = params.toString();
+  const url = queryString ? `${API_BASE}/database/sample-queries?${queryString}` : `${API_BASE}/database/sample-queries`;
+  const res = await fetch(url);
   if (!res.ok) return { samples: [] };
   return res.json();
 }
