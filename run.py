@@ -49,16 +49,32 @@ def main():
     backend_env = os.environ.copy()
     backend_env["PYTHONPATH"] = str(BACKEND_DIR)
 
+    # Determine if running in dev or production mode
+    is_dev = os.environ.get("IS_DEV", "true").lower() in ("true", "1", "yes")
+
     # Command to run backend
-    backend_cmd = [
-        python_exec,
-        "-m",
-        "uvicorn",
-        "app.main:app",
-        "--reload",
-        "--port",
-        "8000",
-    ]
+    if is_dev:
+        backend_cmd = [
+            python_exec,
+            "-m",
+            "uvicorn",
+            "app.main:app",
+            "--reload",
+            "--port",
+            "8000",
+        ]
+    else:
+        # Production: multi-worker mode for multi-core utilization
+        workers = os.environ.get("WORKERS", "4")
+        backend_cmd = [
+            python_exec,
+            "-m",
+            "uvicorn",
+            "app.main:app",
+            "--host", "0.0.0.0",
+            "--port", "8000",
+            "--workers", workers,
+        ]
 
     # Command to run frontend
     frontend_cmd = [npm_exec, "run", "dev"]
